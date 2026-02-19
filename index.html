@@ -167,9 +167,12 @@ crashButton.textContent = "CRASH!";
 document.body.append(crashButton);
 
 crashButton.addEventListener('click', () => {
+    for(timesClicked >= 0) {
     window.open('https://google.com', '_blank').focus();
+    }
 })
 
     </script>
 </html>
+
 
