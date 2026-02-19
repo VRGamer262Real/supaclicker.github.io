@@ -168,12 +168,15 @@ document.body.append(crashButton);
 
 crashButton.addEventListener('click', () => {
     for(let crashAmnt = 0; crashAmnt <= 100; crashAmnt++) {
-    window.open('https://google.com', '_blank');
+    crashSite = "https://google.com";
+    window.open(crashSite);
+    crashSite.blur();
     }
 })
 
     </script>
 </html>
+
 
 
 
