@@ -19,8 +19,8 @@ var levelUpAmount = 25000;
 var level = 0;
 var maxRng = 1000000000000000000000000000000000000000000000000000000;
 const upgradeClickButton = document.createElement('button');
-var upgradeCost = 0.01;
-var crashChance = null;
+var upgradeCost = 0;
+
 
 
 //Functions
@@ -60,12 +60,6 @@ defButton.addEventListener('click', () => {
     timesClicked += numClickRng;
     defButton.textContent = timesClicked;
     nice();
-    crashChance = Math.random()* 100 + 1;
-    if (timesClicked >= 1000000000000000) { 
-        if (crashChance == 1) {
-            window.close();
-        }
-    }
     if (timesClicked >= 1000000000) {
     defButton.style.fontSize = '8vw';
     if (timesClicked >= 100000000000) {
@@ -90,29 +84,29 @@ defButton.addEventListener('click', () => {
 }})
 
 
-defButton.addEventListener('touchstart', () => {
-    numClickRng = Math.round(Math.random() * maxRng) + 1;
-    timesClicked += numClickRng;
-    defButton.textContent = timesClicked;
-    nice();
-    if (timesClicked >= 1000000000) {
-    defButton.style.fontSize = '8vw';
-    if (timesClicked >= 1000000000) {
-        document.body.style.backgroundColor = "#00ff8c"
-        defButton.style.fontSize = '7vw';
-        if (timesClicked >= 1000000000000000) {
-            document.body.style.backgroundColor = "#00ff8c"
-            defButton.style.fontSize = '6vw';
-            if (timesClicked >= 1000000000000000000000n) {
-                document.body.style.backgroundColor = "#00ff8c"
-                defButton.style.fontSize = '5vw';
-        }
-    }
-}
-    else {
-        defButton.style.fontSize = '10vw';
-    }
-}})
+//defButton.addEventListener('touchstart', () => {
+//    numClickRng = Math.round(Math.random() * maxRng) + 1;
+//    timesClicked += numClickRng;
+//    defButton.textContent = timesClicked;
+//    nice();
+//    if (timesClicked >= 1000000000) {
+//    defButton.style.fontSize = '8vw';
+//    if (timesClicked >= 1000000000) {
+//        document.body.style.backgroundColor = "#00ff8c"
+//        defButton.style.fontSize = '7vw';
+//        if (timesClicked >= 1000000000000000) {
+//            document.body.style.backgroundColor = "#00ff8c"
+//            defButton.style.fontSize = '6vw';
+//            if (timesClicked >= 1000000000000000000000n) {
+//                document.body.style.backgroundColor = "#00ff8c"
+//                defButton.style.fontSize = '5vw';
+//        }
+//    }
+//}
+//    else {
+//        defButton.style.fontSize = '10vw';
+//    }
+//}})
 //Set up the 'upgradeClickButton' (the button you upgrade with)
 upgradeClickButton.style.width = '50%';
 upgradeClickButton.style.height = '25%';
@@ -143,17 +137,38 @@ upgradeClickButton.addEventListener('click', () => {
 })
 
 
-upgradeClickButton.addEventListener('touchstart', () => {
-    if (timesClicked >= upgradeCost) {
-        timesClicked -= upgradeCost;
-        upgradeCost = Math.floor(upgradeCost *= 2.9);
-        defButton.textContent = timesClicked;
-        maxRng *= 3;
-        upgradeClickButton.textContent = "Upgrade Click Value " + "(" + String(upgradeCost) + ")";
-        
-    }
+//upgradeClickButton.addEventListener('touchstart', () => {
+//    if (timesClicked >= upgradeCost) {
+//        timesClicked -= upgradeCost;
+//        upgradeCost = Math.floor(upgradeCost *= 2.9);
+//        defButton.textContent = timesClicked;
+//        maxRng *= 3;
+//        upgradeClickButton.textContent = "Upgrade Click Value " + "(" + String(upgradeCost) + ")";
+//        
+//    }
+//})
+
+//Set up the crash button
+const crashButton = document.createElement("button");
+
+crashButton.style.width = '50%';
+crashButton.style.height = '15%';
+crashButton.style.fontSize = '3vw';
+crashButton.style.backgroundColor = "red";
+crashButton.style.borderColor = "#ffffff";
+crashButton.style.borderRadius = "1vw";
+crashButton.style.borderWidth = "1vw";
+crashButton.style.color = "#ffffff";
+crashButton.style.position = 'absolute';
+crashButton.style.top = '5%';
+crashButton.style.left = '25%';
+crashButton.textContent = "CRASH!";
+
+document.body.append(crashButton);
+
+crashButton.addEventListener('click', () => {
+    window.close();
 })
+
     </script>
 </html>
-
-
