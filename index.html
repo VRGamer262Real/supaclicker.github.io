@@ -32,7 +32,7 @@ function nice() {
 }
 
 function wait(time) {
-    setTimeout(() => {}, time);
+    return new Promise(resolve => setTimeout(resolve, time));
 }
         
 function chroma(speed) {
@@ -171,6 +171,7 @@ upgradeClickButton.addEventListener('touchstart', () => {
 */
     </script>
 </html>
+
 
 
 
