@@ -194,16 +194,12 @@
 
         // Function to set the audio URL
         function setAudioURL() {
-            let audioURL = prompt("Please enter the URL of the audio file:", "https://www.soundjay.com/button/sounds/button-20.mp3");
-            if (audioURL !== null && audioURL !== "") {
-                // Create audio element
-                clickSound = new Audio(audioURL);
-                clickSound.preload = 'auto';
-            } else {
-                // Default audio URL if the user cancels or enters nothing
-                clickSound = new Audio("https://www.soundjay.com/button/sounds/button-20.mp3");
-                clickSound.preload = 'auto';
-            }
+            // Use the provided URL directly
+            const audioURL = "https://github.com/zOcMYT/supaclicker.github.io/blob/main/Mouseclick.wav";
+            
+            // Create audio element
+            clickSound = new Audio(audioURL);
+            clickSound.preload = 'auto';
         }
 
         // Set up the 'def button' (the button you click)
@@ -225,7 +221,7 @@
         defButton.style.fontSize = FONT_SIZES.default; // Ensure default font size is set if no thresholds met
 
         // Load Audio
-        setAudioURL("https://github.com/zOcMYT/supaclicker.github.io/blob/main/Mouseclick.wav");
+        setAudioURL();
         // Note: Touch event listeners are omitted as they were commented out and not explicitly required.
         // If needed, they can be added similarly to click listeners, ensuring they call the same handler functions.
 
