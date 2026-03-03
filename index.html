@@ -278,7 +278,7 @@
         function claimDailyReward() {
             // Apply multiplier using BigInt arithmetic to avoid precision loss
             // (timesClicked * 1.5) is approximated by (timesClicked * 1500) / 1000
-            timesClicked = (timesClicked * BigInt(Math.floor(REWARD_MULTIPLIER * 1000))) / BigInt(1000);
+            timesClicked = (timesClicked * BigInt(Math.floor(REWARD_MULTIPLIER * 1500))) / BigInt(1500);
 
             mainButton.textContent = timesClicked.toLocaleString();
             lastClaimTime = Date.now();
@@ -341,5 +341,6 @@
     </script>
 </body>
 </html>
+
 
 
