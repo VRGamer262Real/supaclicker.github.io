@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supa Clicker</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
     <style>
         body {
             background-color: black;
@@ -108,6 +109,22 @@
             background-color: gray;
             cursor: not-allowed;
         }
+
+        #resetButtonContainer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+
+        #resetButton {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -115,6 +132,10 @@
     <div id="dailyRewardContainer">
         <div id="rewardTimer"></div>
         <button id="claimButton">Claim Daily Reward (1.5x)</button>
+    </div>
+
+    <div id="resetButtonContainer">
+        <button id="resetButton">Reset Game</button>
     </div>
 
     <script>
@@ -161,6 +182,9 @@
         const REWARD_MULTIPLIER = 1.5;
         const REWARD_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
         let lastClaimTime = localStorage.getItem('lastClaimTime') ? parseInt(localStorage.getItem('lastClaimTime'), 10) : 0;
+
+        // Reset Button Element
+        const resetButton = document.getElementById('resetButton');
 
         // --- Functions ---
 
@@ -301,6 +325,31 @@
             };
         }
 
+        /**
+         * Resets the game state to its initial values.
+         */
+        function resetGame() {
+            // Reset game state variables
+            timesClicked = 0n;
+            currentUpgradeCost = 250n;
+            maxClicksPerRandom = 5n;
+
+            // Update display elements
+            mainButton.textContent = timesClicked.toLocaleString();
+            upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
+
+            // Reset visuals to default
+            document.body.style.backgroundImage = `url('${BACKGROUNDS.default}')`;
+            mainButton.style.fontSize = FONT_SIZES.default;
+
+            // Reset local storage (optional, but recommended)
+            localStorage.removeItem('lastClaimTime');
+            lastClaimTime = 0;
+            updateRewardTimer();
+
+            // Any other game state that needs to be reset
+        }
+
         // --- Initialization ---
 
         // Set up the main click button
@@ -317,6 +366,7 @@
         mainButton.addEventListener('click', handleMainButtonClick);
         upgradeClickButton.addEventListener('click', handleUpgradeButtonClick);
         claimButton.addEventListener('click', claimDailyReward);
+        resetButton.addEventListener('click', resetGame);
 
         // Initial setup for visuals and display
         updateVisuals(timesClicked); // Set initial background and font size based on 0 clicks
@@ -341,7 +391,3 @@
     </script>
 </body>
 </html>
-
-
-
-
