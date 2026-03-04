@@ -29,17 +29,11 @@
             font-size: 5vw;
             border: 1vw solid #ffffff;
             border-radius: 1vw;
-            .rainbow-strobe {
-            background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-            background-size: 400% 400%;
-            animation: rainbow 1.5s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             cursor: pointer;
             transition: filter 0.05s ease-in-out, font-size 0.3s ease-in-out; /* Smooth font size changes */
             box-sizing: border-box; /* Include padding and border in element's total width and height */
+            position: relative; /* Needed for absolute positioning of pseudo-elements if used, or for general layout */
+            overflow: hidden; /* Ensures the gradient stays within the button bounds */
         }
 
         .main-button.glowing {
@@ -131,7 +125,7 @@
 
         .rainbow-strobe {
             background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
-            background-size: 400% 400%;
+            background-size: 400% 400%; /* Increased size for smoother transition */
             animation: rainbow 1.5s linear infinite;
         }
 
@@ -139,8 +133,11 @@
             0% {
                 background-position: 0% 50%;
             }
-            100% {
+            50% { /* Added a midpoint to ensure the full spectrum is covered */
                 background-position: 100% 50%;
+            }
+            100% { /* Resetting to 0% for a seamless loop */
+                background-position: 0% 50%;
             }
         }
     </style>
@@ -417,7 +414,3 @@
     </script>
 </body>
 </html>
-
-
-
-
