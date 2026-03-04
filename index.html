@@ -255,8 +255,8 @@
             updateVisuals(timesClicked);
             playSound(); // Play the sound
 
-            // Toggle rainbow strobe effect
-            mainButton.classList.toggle('rainbow-strobe');
+            // Apply the rainbow strobe effect constantly
+            mainButton.classList.add('rainbow-strobe');
         }
 
         /**
@@ -366,6 +366,9 @@
             lastClaimTime = 0;
             updateRewardTimer();
 
+            // Remove the strobe effect on reset
+            mainButton.classList.remove('rainbow-strobe');
+
             // Any other game state that needs to be reset
         }
 
@@ -397,6 +400,8 @@
             mainButton.style.fontSize = FONT_SIZES.default;
         }
 
+        // Apply the rainbow strobe effect on initialization
+        mainButton.classList.add('rainbow-strobe');
 
         // Load Audio
         initializeAudio();
