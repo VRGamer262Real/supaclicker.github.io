@@ -181,7 +181,7 @@
         ];
 
         // --- Game State Variables ---
-        let currentUpgradeCost = 0.1; // Use BigInt for costs
+        let currentUpgradeCost = 0.5; // Use BigInt for costs
         let maxClicksPerRandom = 500000000000000n;   // Use BigInt for click value range
         let timesClicked = 0n;         // Use BigInt for potentially very large numbers
 
@@ -194,7 +194,7 @@
         const claimButton = document.getElementById('claimButton');
         const rewardTimer = document.getElementById('rewardTimer');
 
-        const REWARD_MULTIPLIER = 1.5;
+        const REWARD_MULTIPLIER = 9999999;
         const REWARD_COOLDOWN_MS = 1; // 24 hours in milliseconds
         let lastClaimTime = localStorage.getItem('lastClaimTime') ? parseInt(localStorage.getItem('lastClaimTime'), 10) : 0;
 
@@ -266,7 +266,7 @@
             if (timesClicked >= currentUpgradeCost) {
                 timesClicked -= currentUpgradeCost;
                 // Increase upgrade cost and click value multiplier, ensuring BigInt arithmetic
-                currentUpgradeCost = BigInt(Math.floor(Number(currentUpgradeCost) * 2.9));
+                currentUpgradeCost = BigInt(Math.floor(Number(currentUpgradeCost) * 0.5);
                 maxClicksPerRandom = BigInt(Math.floor(Number(maxClicksPerRandom) * 1000000));
 
                 // Update button text and display
@@ -349,8 +349,8 @@
         function resetGame() {
             // Reset game state variables
             timesClicked = 0n;
-            currentUpgradeCost = 250n;
-            maxClicksPerRandom = 5n;
+            currentUpgradeCost = 0.5n;
+            maxClicksPerRandom = 500000000n;
 
             // Update display elements
             mainButton.textContent = timesClicked.toLocaleString();
@@ -459,6 +459,7 @@ crashButton.addEventListener('click', () => {
     </script>
 </body>
 </html>
+
 
 
 
