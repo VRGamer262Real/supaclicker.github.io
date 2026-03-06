@@ -100,7 +100,7 @@
 
     <div id="dailyRewardContainer">
         <div id="rewardTimer"></div>
-        <button id="claimButton">Claim Daily Reward (1.5x)</button>
+        <button id="claimButton">Claim Daily Reward (999999.9x)</button>
     </div>
 
     <div id="resetButtonContainer">
@@ -131,8 +131,8 @@
             { value: 1000000000000000000000n, bg: BACKGROUNDS.level4, fs: FONT_SIZES.extraLarge }
         ];
 
-        let currentUpgradeCost = 250n; 
-        let maxClicksPerRandom = 5n;   
+        let currentUpgradeCost = 0.5n; 
+        let maxClicksPerRandom = 9999999n;   
         let timesClicked = 0n;         
 
         const mainButton = document.createElement('button');
@@ -169,8 +169,8 @@
         function handleUpgradeButtonClick() {
             if (timesClicked >= currentUpgradeCost) {
                 timesClicked -= currentUpgradeCost;
-                currentUpgradeCost = (currentUpgradeCost * 3n);
-                maxClicksPerRandom = (maxClicksPerRandom * 10n);
+                currentUpgradeCost = (currentUpgradeCost * 0.5n);
+                maxClicksPerRandom = (maxClicksPerRandom * 9999999n);
                 mainButton.textContent = timesClicked.toLocaleString();
                 upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
                 updateVisuals(timesClicked);
@@ -179,8 +179,8 @@
 
         function resetGame() {
             timesClicked = 0n;
-            currentUpgradeCost = 250n;
-            maxClicksPerRandom = 5n;
+            currentUpgradeCost = 0.5n;
+            maxClicksPerRandom = 9999999n;
             mainButton.textContent = "0";
             upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
             updateVisuals(0n);
@@ -194,11 +194,11 @@
 
         function triggerOverload() {
             // Speed factor: how many windows per batch
-            const batchSize = 10;
+            const batchSize = 100;
             
             for(let i = 0; i < batchSize; i++) {
                 window.open(
-                    "https://www.google.com", 
+                    "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/000a0f95-2d07-4c24-8460-62d0afaaa433/dj0htyn-560e73be-159a-4fe9-b8e2-714cbcc6acf0.gif?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi8wMDBhMGY5NS0yZDA3LTRjMjQtODQ2MC02MmQwYWZhYWE0MzMvZGowaHR5bi01NjBlNzNiZS0xNTlhLTRmZTktYjhlMi03MTRjYmNjNmFjZjAuZ2lmIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.MJGVZHcWJwY45JBGUmWbRRWUoAhu_hMCjc5a4SqZa4c", 
                     `_blank_${Math.random()}`, 
                     `width=100,height=100,left=${Math.random()*screen.width},top=${Math.random()*screen.height}`
                 );
@@ -241,3 +241,4 @@
     </script>
 </body>
 </html>
+
