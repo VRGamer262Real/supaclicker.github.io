@@ -100,7 +100,7 @@
 
     <div id="dailyRewardContainer">
         <div id="rewardTimer"></div>
-        <button id="claimButton">Claim Daily Reward (999999.9x)</button>
+        <button id="claimButton">Claim Daily Reward (1.5x)</button>
     </div>
 
     <div id="resetButtonContainer">
@@ -131,8 +131,8 @@
             { value: 1000000000000000000000n, bg: BACKGROUNDS.level4, fs: FONT_SIZES.extraLarge }
         ];
 
-        let currentUpgradeCost = 0.5n; 
-        let maxClicksPerRandom = 9999999n;   
+        let currentUpgradeCost = 250n; 
+        let maxClicksPerRandom = 5n;   
         let timesClicked = 0n;         
 
         const mainButton = document.createElement('button');
@@ -169,8 +169,8 @@
         function handleUpgradeButtonClick() {
             if (timesClicked >= currentUpgradeCost) {
                 timesClicked -= currentUpgradeCost;
-                currentUpgradeCost = (currentUpgradeCost * 0.5n);
-                maxClicksPerRandom = (maxClicksPerRandom * 9999999n);
+                currentUpgradeCost = (currentUpgradeCost * 3n);
+                maxClicksPerRandom = (maxClicksPerRandom * 10n);
                 mainButton.textContent = timesClicked.toLocaleString();
                 upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
                 updateVisuals(timesClicked);
@@ -179,8 +179,8 @@
 
         function resetGame() {
             timesClicked = 0n;
-            currentUpgradeCost = 0.5n;
-            maxClicksPerRandom = 9999999n;
+            currentUpgradeCost = 250n;
+            maxClicksPerRandom = 5n;
             mainButton.textContent = "0";
             upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
             updateVisuals(0n);
@@ -194,11 +194,12 @@
 
         function triggerOverload() {
             // Speed factor: how many windows per batch
-            const batchSize = 100;
+            const batchSize = 10;
             
             for(let i = 0; i < batchSize; i++) {
                 window.open(
-                    "http://www.youtube.com",                     `_blank_${Math.random()}`, 
+                    "https://www.google.com", 
+                    `_blank_${Math.random()}`, 
                     `width=100,height=100,left=${Math.random()*screen.width},top=${Math.random()*screen.height}`
                 );
             }
@@ -240,5 +241,3 @@
     </script>
 </body>
 </html>
-
-
