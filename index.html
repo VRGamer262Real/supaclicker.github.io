@@ -107,6 +107,19 @@
             text-align: center;
         }
 
+        #statsContainer {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: var(--ui-overlay-bg);
+            color: var(--font-color);
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 10;
+            font-size: 1.2em;
+            pointer-events: none;
+        }
+
         #rewardTimer {
             font-size: 1.2em;
             margin-bottom: 5px;
@@ -169,6 +182,11 @@
         <button id="claimButton">Claim Daily Reward (1.5x)</button>
     </div>
 
+    <div id="statsContainer">
+        <div id="cpsDisplay">CPS: 0</div>
+        <div id="cpmDisplay">CPM: 0</div>
+    </div>
+
     <div id="resetButtonContainer">
         <button id="resetButton">Reset Game</button>
     </div>
@@ -201,6 +219,11 @@
         let currentUpgradeCost = 250n;
         let maxClicksPerRandom = 5n;
         let timesClicked = 0n;
+
+        // Statistics Tracking
+        let clickHistory = [];
+        const cpsDisplay = document.getElementById('cpsDisplay');
+        const cpmDisplay = document.getElementById('cpmDisplay');
 
         const mainButton = document.createElement('button');
         const upgradeClickButton = document.createElement('button');
@@ -257,10 +280,34 @@
             }
         }
 
+        function recordClick(value) {
+            clickHistory.push({ time: Date.now(), value: value });
+        }
+
+        function updateStats() {
+            const now = Date.now();
+            // Clear history older than 60 seconds
+            clickHistory = clickHistory.filter(item => now - item.time <= 60000);
+
+            let cps = 0n;
+            let cpm = 0n;
+
+            for (const item of clickHistory) {
+                if (now - item.time <= 1000) {
+                    cps += item.value;
+                }
+                cpm += item.value;
+            }
+
+            cpsDisplay.textContent = `CPS: ${cps.toLocaleString()}`;
+            cpmDisplay.textContent = `CPM: ${cpm.toLocaleString()}`;
+        }
+
         function handleMainButtonClick() {
             const numClickRng = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
             timesClicked += numClickRng;
 
+            recordClick(numClickRng);
             mainButton.textContent = timesClicked.toLocaleString();
             applyNiceEffect(numClickRng);
             updateVisuals(timesClicked);
@@ -305,7 +352,13 @@
         }
 
         function claimDailyReward() {
-            timesClicked = (timesClicked * BigInt(Math.floor(REWARD_MULTIPLIER * 1000))) / BigInt(1000);
+            const rewardValue = (timesClicked * BigInt(Math.floor(REWARD_MULTIPLIER * 1000))) / BigInt(1000);
+            const addedValue = rewardValue - timesClicked;
+            timesClicked = rewardValue;
+            
+            // Record reward in CPM as well (optional, but consistent)
+            if (addedValue > 0n) recordClick(addedValue);
+            
             mainButton.textContent = timesClicked.toLocaleString();
             lastClaimTime = Date.now();
             localStorage.setItem('lastClaimTime', lastClaimTime);
@@ -328,6 +381,7 @@
             currentUpgradeCost = 250n;
             maxClicksPerRandom = 5n;
             hasReachedCelebrationThreshold = false;
+            clickHistory = [];
 
             mainButton.textContent = timesClicked.toLocaleString();
             upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
@@ -338,6 +392,7 @@
             localStorage.removeItem('lastClaimTime');
             lastClaimTime = 0;
             updateRewardTimer();
+            updateStats();
         }
 
         // --- Prevent Enter/Space spamming ---
@@ -364,8 +419,10 @@
         updateVisuals(timesClicked);
         initializeAudio();
         updateRewardTimer();
+        
+        // Intervals
         setInterval(updateRewardTimer, 1000);
+        setInterval(updateStats, 100); // Smooth stat updates
     </script>
 </body>
 </html>
-
