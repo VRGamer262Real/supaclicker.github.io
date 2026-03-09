@@ -22,7 +22,7 @@
             --claim-button-hover-bg: darkgreen;
             --claim-button-disabled-bg: gray;
             --reset-button-bg: red;
-            --ui-overlay-bg: rgba(0, 0, 0, 0.5);
+            --ui-overlay-bg: rgba(0, 0, 0, 0.7); /* Slightly darker for readability */
         }
 
         body {
@@ -41,6 +41,7 @@
             min-height: 100vh;
         }
 
+        /* Essential for layering: ensure UI elements are above button */
         .main-button {
             width: 85%;
             height: 50%;
@@ -57,6 +58,7 @@
             box-sizing: border-box;
             background-color: transparent;
             outline: none;
+            z-index: 1; /* Low z-index */
         }
 
         .main-button.glowing {
@@ -79,20 +81,7 @@
             transition: background-color 0.3s ease-in-out;
             box-sizing: border-box;
             outline: none;
-        }
-
-        @media (max-width: 768px) {
-            .main-button {
-                font-size: 3vw;
-                width: 90%;
-                height: 40%;
-            }
-            .upgrade-button {
-                font-size: 1.5vw;
-                width: 80%;
-                height: 20%;
-                bottom: 2%;
-            }
+            z-index: 2; /* Low z-index */
         }
 
         #dailyRewardContainer {
@@ -103,21 +92,29 @@
             color: var(--font-color);
             padding: 10px;
             border-radius: 5px;
-            z-index: 10;
+            z-index: 1000; /* High z-index */
             text-align: center;
         }
 
+        /* FIXED STATS CONTAINER */
         #statsContainer {
             position: absolute;
-            bottom: 10px;
-            left: 10px;
+            bottom: 20px;
+            left: 20px;
             background-color: var(--ui-overlay-bg);
             color: var(--font-color);
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 10;
-            font-size: 1.2em;
-            pointer-events: none;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 1000; /* High z-index ensures visibility */
+            font-size: 1.5rem;
+            pointer-events: none; /* Allows clicking buttons through the text */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 150px;
+        }
+
+        #statsContainer div {
+            margin: 5px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
         #rewardTimer {
@@ -149,7 +146,7 @@
             position: absolute;
             top: 10px;
             right: 10px;
-            z-index: 10;
+            z-index: 1000;
         }
 
         #resetButton {
@@ -173,6 +170,12 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+
+        @media (max-width: 768px) {
+            .main-button { width: 90%; height: 40%; }
+            .upgrade-button { width: 80%; height: 20%; bottom: 2%; }
+            #statsContainer { font-size: 1rem; bottom: 10px; left: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -182,6 +185,7 @@
         <button id="claimButton">Claim Daily Reward (1.5x)</button>
     </div>
 
+    <!-- Stats UI remains at the top of the DOM -->
     <div id="statsContainer">
         <div id="cpsDisplay">CPS: 0</div>
         <div id="cpmDisplay">CPM: 0</div>
@@ -220,7 +224,7 @@
         let maxClicksPerRandom = 5n;
         let timesClicked = 0n;
 
-        // Statistics Tracking
+        // Statistics Tracking Logic
         let clickHistory = [];
         const cpsDisplay = document.getElementById('cpsDisplay');
         const cpmDisplay = document.getElementById('cpmDisplay');
@@ -239,6 +243,29 @@
         let hasReachedCelebrationThreshold = false;
 
         const resetButton = document.getElementById('resetButton');
+
+        function recordClick(value) {
+            clickHistory.push({ time: Date.now(), value: value });
+        }
+
+        function updateStats() {
+            const now = Date.now();
+            // Clear history older than 60 seconds
+            clickHistory = clickHistory.filter(item => now - item.time <= 60000);
+
+            let cps = 0n;
+            let cpm = 0n;
+
+            for (const item of clickHistory) {
+                if (now - item.time <= 1000) {
+                    cps += item.value;
+                }
+                cpm += item.value;
+            }
+
+            cpsDisplay.textContent = `CPS: ${cps.toLocaleString()}`;
+            cpmDisplay.textContent = `CPM: ${cpm.toLocaleString()}`;
+        }
 
         function applyNiceEffect(clickValue) {
             const glowThreshold = BigInt(Math.floor(Number(maxClicksPerRandom) * 0.75));
@@ -269,38 +296,15 @@
         function playSound() {
             if (clickSound) {
                 clickSound.currentTime = 0;
-                clickSound.play().catch(error => console.warn("Audio playback failed:", error));
+                clickSound.play().catch(e => {});
             }
         }
 
         function playCelebrationSound() {
             if (clickSound2) {
                 clickSound2.currentTime = 0;
-                clickSound2.play().catch(error => console.warn("Celebration audio playback failed:", error));
+                clickSound2.play().catch(e => {});
             }
-        }
-
-        function recordClick(value) {
-            clickHistory.push({ time: Date.now(), value: value });
-        }
-
-        function updateStats() {
-            const now = Date.now();
-            // Clear history older than 60 seconds
-            clickHistory = clickHistory.filter(item => now - item.time <= 60000);
-
-            let cps = 0n;
-            let cpm = 0n;
-
-            for (const item of clickHistory) {
-                if (now - item.time <= 1000) {
-                    cps += item.value;
-                }
-                cpm += item.value;
-            }
-
-            cpsDisplay.textContent = `CPS: ${cps.toLocaleString()}`;
-            cpmDisplay.textContent = `CPM: ${cpm.toLocaleString()}`;
         }
 
         function handleMainButtonClick() {
@@ -356,7 +360,6 @@
             const addedValue = rewardValue - timesClicked;
             timesClicked = rewardValue;
             
-            // Record reward in CPM as well (optional, but consistent)
             if (addedValue > 0n) recordClick(addedValue);
             
             mainButton.textContent = timesClicked.toLocaleString();
@@ -367,13 +370,8 @@
         }
 
         function initializeAudio() {
-            const audioURL = "https://github.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav";
-            clickSound = new Audio(audioURL);
-            clickSound.preload = 'auto';
-            
-            const audioURL2 = "https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3";
-            clickSound2 = new Audio(audioURL2);
-            clickSound2.preload = 'auto';
+            clickSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav");
+            clickSound2 = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3");
         }
 
         function resetGame() {
@@ -383,28 +381,23 @@
             hasReachedCelebrationThreshold = false;
             clickHistory = [];
 
-            mainButton.textContent = timesClicked.toLocaleString();
+            mainButton.textContent = "0";
             upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
-
             document.body.style.backgroundImage = BACKGROUNDS.default;
-            mainButton.style.fontSize = FONT_SIZES.default;
-
+            
             localStorage.removeItem('lastClaimTime');
             lastClaimTime = 0;
             updateRewardTimer();
             updateStats();
         }
 
-        // --- Prevent Enter/Space spamming ---
         window.addEventListener('keydown', (e) => {
-            if (e.repeat && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault();
-            }
+            if (e.repeat && (e.key === 'Enter' || e.key === ' ')) e.preventDefault();
         });
 
-        // --- Initialization ---
+        // Initialize UI
         mainButton.className = 'main-button rainbow-strobe';
-        mainButton.textContent = timesClicked.toLocaleString();
+        mainButton.textContent = "0";
         document.body.append(mainButton);
 
         upgradeClickButton.className = 'upgrade-button rainbow-strobe';
@@ -416,13 +409,11 @@
         claimButton.addEventListener('click', claimDailyReward);
         resetButton.addEventListener('click', resetGame);
 
-        updateVisuals(timesClicked);
         initializeAudio();
         updateRewardTimer();
         
-        // Intervals
         setInterval(updateRewardTimer, 1000);
-        setInterval(updateStats, 100); // Smooth stat updates
+        setInterval(updateStats, 100); 
     </script>
 </body>
 </html>
