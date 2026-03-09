@@ -39,7 +39,6 @@
             align-items: center;
         }
 
-        /* UI ELEMENTS OVERLAY */
         #dailyRewardContainer {
             position: absolute;
             top: 20px;
@@ -59,7 +58,7 @@
             background-color: var(--ui-overlay-bg);
             padding: 15px;
             border-radius: 10px;
-            z-index: 9999; 
+            z-index: 9999;
             border: 1px solid white;
             min-width: 180px;
             pointer-events: none;
@@ -78,7 +77,6 @@
             z-index: 9999;
         }
 
-        /* BUTTONS STRETCH WITH TEXT */
         .main-button {
             display: inline-block;
             width: auto;
@@ -135,7 +133,10 @@
             margin-top: 10px;
         }
 
-        #claimButton:disabled { background-color: gray; cursor: not-allowed; }
+        #claimButton:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
 
         #resetButton {
             background-color: red;
@@ -155,7 +156,6 @@
 </head>
 <body>
 
-    <!-- UI LAYER (Bottom Left Stats) -->
     <div id="dailyRewardContainer">
         <div id="rewardTimer">Loading...</div>
         <button id="claimButton">Claim Daily Reward (1.5x)</button>
@@ -170,7 +170,6 @@
         <button id="resetButton">Reset Game</button>
     </div>
 
-    <!-- GAME ENGINE CONTAINER -->
     <script>
         const BACKGROUNDS = {
             default: 'url(\'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhQhK_wQIRUwpbM_pXJHn18sC8ovXBGirUpQ&s\')',
@@ -192,19 +191,17 @@
         let maxClicksPerRandom = 5n;
         let clickHistory = [];
         let lastClaimTime = localStorage.getItem('lastClaimTime') ? parseInt(localStorage.getItem('lastClaimTime'), 10) : 0;
-        
-        // Audio
+
         const clickSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav");
         const celebrationSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3");
 
-        // UI Components
         const mainButton = document.createElement('button');
         mainButton.className = 'main-button rainbow-strobe';
         mainButton.textContent = "0";
         document.body.appendChild(mainButton);
 
         const upgradeButton = document.createElement('button');
-        upgradeButton.className = 'upgrade-button';
+        upgradeButton.className = 'upgrade-button rainbow-strobe';
         upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
         document.body.appendChild(upgradeButton);
 
@@ -249,12 +246,12 @@
             const reward = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
             timesClicked += reward;
             recordPoint(reward);
-            
+
             mainButton.textContent = timesClicked.toLocaleString();
             updateVisuals();
-            
+
             clickSound.currentTime = 0;
-            clickSound.play().catch(()=>{});
+            clickSound.play().catch(() => {});
         };
 
         upgradeButton.onclick = () => {
@@ -262,7 +259,7 @@
                 timesClicked -= currentUpgradeCost;
                 currentUpgradeCost = BigInt(Math.floor(Number(currentUpgradeCost) * 2.9));
                 maxClicksPerRandom = BigInt(Math.floor(Number(maxClicksPerRandom) * 3));
-                
+
                 mainButton.textContent = timesClicked.toLocaleString();
                 upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
                 updateVisuals();
@@ -278,19 +275,19 @@
                 rewardTimer.textContent = "Reward Ready!";
                 claimButton.disabled = false;
             } else {
-                const h = Math.floor(diff/3600000);
-                const m = Math.floor((diff%3600000)/60000);
-                const s = Math.floor((diff%60000)/1000);
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
                 rewardTimer.textContent = `Next Reward: ${h}h ${m}m ${s}s`;
                 claimButton.disabled = true;
             }
         }
 
         claimButton.onclick = () => {
-            const bonus = timesClicked / 2n; // 1.5x total
+            const bonus = timesClicked / 2n;
             timesClicked += bonus;
             recordPoint(bonus);
-            
+
             lastClaimTime = Date.now();
             localStorage.setItem('lastClaimTime', lastClaimTime);
             mainButton.textContent = timesClicked.toLocaleString();
@@ -298,7 +295,7 @@
         };
 
         resetButton.onclick = () => {
-            if(confirm("Reset everything?")){
+            if (confirm("Reset everything?")) {
                 timesClicked = 0n;
                 currentUpgradeCost = 250n;
                 maxClicksPerRandom = 5n;
@@ -311,7 +308,15 @@
             }
         };
 
-        // Intervals
+        window.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && e.repeat) {
+                e.preventDefault();
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+
         setInterval(updateStats, 100);
         setInterval(updateTimer, 1000);
         updateTimer();
