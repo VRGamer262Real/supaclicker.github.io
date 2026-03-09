@@ -362,13 +362,14 @@
             clickSound.onerror = () => {
                 console.error("Failed to load audio file:", audioURL);
                 clickSound = null; // Nullify if loading fails
+            };
 
             const audioURL2 = "https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3"; // Use raw URL
-            clickSound2 = new Audio(audioURL);
+            clickSound2 = new Audio(audioURL2);
             clickSound2.preload = 'auto'; // Preload audio for better performance
             // Add error handling for audio loading
             clickSound2.onerror = () => {
-                console2.error("Failed to load audio file:", audioURL);
+                console2.error("Failed to load audio file:", audioURL2);
                 clickSound2 = null; // Nullify if loading fails
             };
         }
@@ -444,4 +445,3 @@
     </script>
 </body>
 </html>
-
