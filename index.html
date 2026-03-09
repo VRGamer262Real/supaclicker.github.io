@@ -18,11 +18,7 @@
             --font-color: white;
             --button-border-color: #ffffff;
             --upgrade-button-bg: rgb(54, 41, 58);
-            --claim-button-bg: green;
-            --claim-button-hover-bg: darkgreen;
-            --claim-button-disabled-bg: gray;
-            --reset-button-bg: red;
-            --ui-overlay-bg: rgba(0, 0, 0, 0.7); /* Slightly darker for readability */
+            --ui-overlay-bg: rgba(0, 0, 0, 0.8);
         }
 
         body {
@@ -30,139 +26,97 @@
             background-image: var(--default-bg-image);
             background-size: cover;
             background-position: center;
-            transition: background-image 0.5s ease-in-out, background-color 0.5s ease-in-out;
+            transition: background-image 0.5s ease-in-out;
             margin: 0;
             overflow: hidden;
             font-family: var(--font-default);
             color: var(--font-color);
+            height: 100vh;
+            width: 100vw;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
         }
 
-        /* Essential for layering: ensure UI elements are above button */
-        .main-button {
-            width: 85%;
-            height: 50%;
-            font-size: 5vw;
-            border: 1vw solid var(--button-border-color);
-            border-radius: 1vw;
-            color: var(--font-color);
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            transition: filter 0.05s ease-in-out, font-size 0.3s ease-in-out;
-            box-sizing: border-box;
-            background-color: transparent;
-            outline: none;
-            z-index: 1; /* Low z-index */
-        }
-
-        .main-button.glowing {
-            filter: blur(10px);
-        }
-
-        .upgrade-button {
-            width: 50%;
-            height: 25%;
-            font-size: 1vw;
-            background-color: var(--upgrade-button-bg);
-            border: 1vw solid var(--button-border-color);
-            border-radius: 1vw;
-            color: var(--font-color);
-            position: absolute;
-            bottom: 5%;
-            left: 50%;
-            transform: translateX(-50%);
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-            box-sizing: border-box;
-            outline: none;
-            z-index: 2; /* Low z-index */
-        }
-
+        /* UI ELEMENTS OVERLAY */
         #dailyRewardContainer {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 20px;
+            left: 20px;
             background-color: var(--ui-overlay-bg);
-            color: var(--font-color);
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 1000; /* High z-index */
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 9999;
             text-align: center;
+            border: 1px solid white;
         }
 
-        /* FIXED STATS CONTAINER */
         #statsContainer {
             position: absolute;
             bottom: 20px;
             left: 20px;
             background-color: var(--ui-overlay-bg);
-            color: var(--font-color);
             padding: 15px;
-            border-radius: 8px;
-            z-index: 1000; /* High z-index ensures visibility */
-            font-size: 1.5rem;
-            pointer-events: none; /* Allows clicking buttons through the text */
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            min-width: 150px;
+            border-radius: 10px;
+            z-index: 9999; 
+            border: 1px solid white;
+            min-width: 180px;
+            pointer-events: none;
         }
 
         #statsContainer div {
+            font-size: 1.4rem;
             margin: 5px 0;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        #rewardTimer {
-            font-size: 1.2em;
-            margin-bottom: 5px;
-        }
-
-        #claimButton {
-            background-color: var(--claim-button-bg);
-            color: var(--font-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out;
-            outline: none;
-        }
-
-        #claimButton:hover:not(:disabled) {
-            background-color: var(--claim-button-hover-bg);
-        }
-
-        #claimButton:disabled {
-            background-color: var(--claim-button-disabled-bg);
-            cursor: not-allowed;
+            white-space: nowrap;
         }
 
         #resetButtonContainer {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
         }
 
-        #resetButton {
-            background-color: var(--reset-button-bg);
+        /* BUTTONS STRETCH WITH TEXT */
+        .main-button {
+            display: inline-block;
+            width: auto;
+            height: auto;
+            min-width: 300px;
+            padding: 40px 60px;
+            font-size: 5vw;
+            border: 0.8vw solid var(--button-border-color);
+            border-radius: 20px;
             color: var(--font-color);
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
             cursor: pointer;
-            outline: none;
+            transition: transform 0.1s, filter 0.1s;
+            background-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .main-button:active {
+            transform: scale(0.98);
+        }
+
+        .upgrade-button {
+            display: inline-block;
+            width: auto;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            background-color: var(--upgrade-button-bg);
+            border: 0.4vw solid var(--button-border-color);
+            border-radius: 15px;
+            color: var(--font-color);
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .rainbow-strobe {
             background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
             background-size: 400% 400%;
-            animation: rainbow 1.5s linear infinite;
+            animation: rainbow 3s linear infinite;
         }
 
         @keyframes rainbow {
@@ -171,30 +125,52 @@
             100% { background-position: 0% 50%; }
         }
 
+        #claimButton {
+            background-color: green;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #claimButton:disabled { background-color: gray; cursor: not-allowed; }
+
+        #resetButton {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
-            .main-button { width: 90%; height: 40%; }
-            .upgrade-button { width: 80%; height: 20%; bottom: 2%; }
-            #statsContainer { font-size: 1rem; bottom: 10px; left: 10px; }
+            .main-button { font-size: 8vw; padding: 20px 40px; min-width: 200px; }
+            .upgrade-button { font-size: 1rem; }
+            #statsContainer div { font-size: 1rem; }
         }
     </style>
 </head>
 <body>
 
+    <!-- UI LAYER (Bottom Left Stats) -->
     <div id="dailyRewardContainer">
-        <div id="rewardTimer"></div>
+        <div id="rewardTimer">Loading...</div>
         <button id="claimButton">Claim Daily Reward (1.5x)</button>
     </div>
 
-    <!-- Stats UI remains at the top of the DOM -->
     <div id="statsContainer">
-        <div id="cpsDisplay">CPS: 0</div>
-        <div id="cpmDisplay">CPM: 0</div>
+        <div id="cpsDisplay"><b>CPS:</b> 0</div>
+        <div id="cpmDisplay"><b>CPM:</b> 0</div>
     </div>
 
     <div id="resetButtonContainer">
         <button id="resetButton">Reset Game</button>
     </div>
 
+    <!-- GAME ENGINE CONTAINER -->
     <script>
         const BACKGROUNDS = {
             default: 'url(\'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhQhK_wQIRUwpbM_pXJHn18sC8ovXBGirUpQ&s\')',
@@ -204,216 +180,141 @@
             level4: 'url(\'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM9-ANfPq_7ESF0UHnzM6s3HLaSHie6F140Q&s\')'
         };
 
-        const FONT_SIZES = {
-            default: '5vw',
-            large: '4vw',
-            larger: '3vw',
-            largest: '2vw',
-            extraLarge: '1vw',
-            extraExtraLarge: '0.9vw'
-        };
-
         const LEVEL_THRESHOLDS = [
-            { value: 1_000_000_000n, bg: BACKGROUNDS.level1, fs: FONT_SIZES.large },
-            { value: 1_000_000_000_000_000n, bg: BACKGROUNDS.level2, fs: FONT_SIZES.largest },
-            { value: 1_000_000_000_000_000_000_000n, bg: BACKGROUNDS.level3, fs: FONT_SIZES.extraLarge },
-            { value: 1_000_000_000_000_000_000_000_000_000n, bg: BACKGROUNDS.level4, fs: FONT_SIZES.extraExtraLarge }
+            { value: 1_000_000_000n, bg: BACKGROUNDS.level1 },
+            { value: 1_000_000_000_000_000n, bg: BACKGROUNDS.level2 },
+            { value: 1_000_000_000_000_000_000_000n, bg: BACKGROUNDS.level3 },
+            { value: 1_000_000_000_000_000_000_000_000_000n, bg: BACKGROUNDS.level4 }
         ];
 
+        let timesClicked = 0n;
         let currentUpgradeCost = 250n;
         let maxClicksPerRandom = 5n;
-        let timesClicked = 0n;
-
-        // Statistics Tracking Logic
         let clickHistory = [];
+        let lastClaimTime = localStorage.getItem('lastClaimTime') ? parseInt(localStorage.getItem('lastClaimTime'), 10) : 0;
+        
+        // Audio
+        const clickSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav");
+        const celebrationSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3");
+
+        // UI Components
+        const mainButton = document.createElement('button');
+        mainButton.className = 'main-button rainbow-strobe';
+        mainButton.textContent = "0";
+        document.body.appendChild(mainButton);
+
+        const upgradeButton = document.createElement('button');
+        upgradeButton.className = 'upgrade-button';
+        upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
+        document.body.appendChild(upgradeButton);
+
         const cpsDisplay = document.getElementById('cpsDisplay');
         const cpmDisplay = document.getElementById('cpmDisplay');
-
-        const mainButton = document.createElement('button');
-        const upgradeClickButton = document.createElement('button');
-        let clickSound;
-        let clickSound2;
-
         const claimButton = document.getElementById('claimButton');
         const rewardTimer = document.getElementById('rewardTimer');
-
-        const REWARD_MULTIPLIER = 1.5;
-        const REWARD_COOLDOWN_MS = 24 * 60 * 60 * 1000;
-        let lastClaimTime = localStorage.getItem('lastClaimTime') ? parseInt(localStorage.getItem('lastClaimTime'), 10) : 0;
-        let hasReachedCelebrationThreshold = false;
-
         const resetButton = document.getElementById('resetButton');
 
-        function recordClick(value) {
+        function recordPoint(value) {
             clickHistory.push({ time: Date.now(), value: value });
         }
 
         function updateStats() {
             const now = Date.now();
-            // Clear history older than 60 seconds
             clickHistory = clickHistory.filter(item => now - item.time <= 60000);
 
             let cps = 0n;
             let cpm = 0n;
 
-            for (const item of clickHistory) {
-                if (now - item.time <= 1000) {
-                    cps += item.value;
-                }
+            clickHistory.forEach(item => {
+                if (now - item.time <= 1000) cps += item.value;
                 cpm += item.value;
-            }
+            });
 
-            cpsDisplay.textContent = `CPS: ${cps.toLocaleString()}`;
-            cpmDisplay.textContent = `CPM: ${cpm.toLocaleString()}`;
+            cpsDisplay.innerHTML = `<b>CPS:</b> ${cps.toLocaleString()}`;
+            cpmDisplay.innerHTML = `<b>CPM:</b> ${cpm.toLocaleString()}`;
         }
 
-        function applyNiceEffect(clickValue) {
-            const glowThreshold = BigInt(Math.floor(Number(maxClicksPerRandom) * 0.75));
-            if (clickValue >= glowThreshold) {
-                mainButton.classList.add('glowing');
-                setTimeout(() => {
-                    mainButton.classList.remove('glowing');
-                }, 150);
-            }
-        }
-
-        function updateVisuals(currentClicks) {
-            let appliedThreshold = false;
+        function updateVisuals() {
+            let bg = BACKGROUNDS.default;
             for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-                if (currentClicks >= LEVEL_THRESHOLDS[i].value) {
-                    document.body.style.backgroundImage = LEVEL_THRESHOLDS[i].bg;
-                    mainButton.style.fontSize = LEVEL_THRESHOLDS[i].fs;
-                    appliedThreshold = true;
+                if (timesClicked >= LEVEL_THRESHOLDS[i].value) {
+                    bg = LEVEL_THRESHOLDS[i].bg;
                     break;
                 }
             }
-            if (!appliedThreshold) {
-                document.body.style.backgroundImage = BACKGROUNDS.default;
-                mainButton.style.fontSize = FONT_SIZES.default;
-            }
+            document.body.style.backgroundImage = bg;
         }
 
-        function playSound() {
-            if (clickSound) {
-                clickSound.currentTime = 0;
-                clickSound.play().catch(e => {});
-            }
-        }
-
-        function playCelebrationSound() {
-            if (clickSound2) {
-                clickSound2.currentTime = 0;
-                clickSound2.play().catch(e => {});
-            }
-        }
-
-        function handleMainButtonClick() {
-            const numClickRng = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
-            timesClicked += numClickRng;
-
-            recordClick(numClickRng);
+        mainButton.onclick = () => {
+            const reward = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
+            timesClicked += reward;
+            recordPoint(reward);
+            
             mainButton.textContent = timesClicked.toLocaleString();
-            applyNiceEffect(numClickRng);
-            updateVisuals(timesClicked);
-            playSound();
+            updateVisuals();
+            
+            clickSound.currentTime = 0;
+            clickSound.play().catch(()=>{});
+        };
 
-            const CELEBRATION_THRESHOLD = 1_000_000_000_000_000_000_000_000_000n;
-            if (timesClicked >= CELEBRATION_THRESHOLD && !hasReachedCelebrationThreshold) {
-                playCelebrationSound();
-                hasReachedCelebrationThreshold = true;
-            }
-        }
-
-        function handleUpgradeButtonClick() {
+        upgradeButton.onclick = () => {
             if (timesClicked >= currentUpgradeCost) {
                 timesClicked -= currentUpgradeCost;
                 currentUpgradeCost = BigInt(Math.floor(Number(currentUpgradeCost) * 2.9));
                 maxClicksPerRandom = BigInt(Math.floor(Number(maxClicksPerRandom) * 3));
-
+                
                 mainButton.textContent = timesClicked.toLocaleString();
-                upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
-
-                updateVisuals(timesClicked);
+                upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
+                updateVisuals();
             }
-        }
+        };
 
-        function updateRewardTimer() {
+        function updateTimer() {
             const now = Date.now();
-            const timeSinceLastClaim = now - lastClaimTime;
+            const wait = 24 * 60 * 60 * 1000;
+            const diff = wait - (now - lastClaimTime);
 
-            if (timeSinceLastClaim >= REWARD_COOLDOWN_MS) {
+            if (diff <= 0) {
                 rewardTimer.textContent = "Reward Ready!";
                 claimButton.disabled = false;
             } else {
-                const timeLeft = REWARD_COOLDOWN_MS - timeSinceLastClaim;
-                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                rewardTimer.textContent = `Time until reward: ${hours}h ${minutes}m ${seconds}s`;
+                const h = Math.floor(diff/3600000);
+                const m = Math.floor((diff%3600000)/60000);
+                const s = Math.floor((diff%60000)/1000);
+                rewardTimer.textContent = `Next Reward: ${h}h ${m}m ${s}s`;
                 claimButton.disabled = true;
             }
         }
 
-        function claimDailyReward() {
-            const rewardValue = (timesClicked * BigInt(Math.floor(REWARD_MULTIPLIER * 1000))) / BigInt(1000);
-            const addedValue = rewardValue - timesClicked;
-            timesClicked = rewardValue;
+        claimButton.onclick = () => {
+            const bonus = timesClicked / 2n; // 1.5x total
+            timesClicked += bonus;
+            recordPoint(bonus);
             
-            if (addedValue > 0n) recordClick(addedValue);
-            
-            mainButton.textContent = timesClicked.toLocaleString();
             lastClaimTime = Date.now();
             localStorage.setItem('lastClaimTime', lastClaimTime);
-            updateVisuals(timesClicked);
-            updateRewardTimer();
-        }
+            mainButton.textContent = timesClicked.toLocaleString();
+            updateTimer();
+        };
 
-        function initializeAudio() {
-            clickSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav");
-            clickSound2 = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3");
-        }
+        resetButton.onclick = () => {
+            if(confirm("Reset everything?")){
+                timesClicked = 0n;
+                currentUpgradeCost = 250n;
+                maxClicksPerRandom = 5n;
+                clickHistory = [];
+                lastClaimTime = 0;
+                localStorage.removeItem('lastClaimTime');
+                mainButton.textContent = "0";
+                upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
+                updateVisuals();
+            }
+        };
 
-        function resetGame() {
-            timesClicked = 0n;
-            currentUpgradeCost = 250n;
-            maxClicksPerRandom = 5n;
-            hasReachedCelebrationThreshold = false;
-            clickHistory = [];
-
-            mainButton.textContent = "0";
-            upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
-            document.body.style.backgroundImage = BACKGROUNDS.default;
-            
-            localStorage.removeItem('lastClaimTime');
-            lastClaimTime = 0;
-            updateRewardTimer();
-            updateStats();
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.repeat && (e.key === 'Enter' || e.key === ' ')) e.preventDefault();
-        });
-
-        // Initialize UI
-        mainButton.className = 'main-button rainbow-strobe';
-        mainButton.textContent = "0";
-        document.body.append(mainButton);
-
-        upgradeClickButton.className = 'upgrade-button rainbow-strobe';
-        upgradeClickButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
-        document.body.append(upgradeClickButton);
-
-        mainButton.addEventListener('click', handleMainButtonClick);
-        upgradeClickButton.addEventListener('click', handleUpgradeButtonClick);
-        claimButton.addEventListener('click', claimDailyReward);
-        resetButton.addEventListener('click', resetGame);
-
-        initializeAudio();
-        updateRewardTimer();
-        
-        setInterval(updateRewardTimer, 1000);
-        setInterval(updateStats, 100); 
+        // Intervals
+        setInterval(updateStats, 100);
+        setInterval(updateTimer, 1000);
+        updateTimer();
     </script>
 </body>
 </html>
