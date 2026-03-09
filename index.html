@@ -39,78 +39,43 @@
             align-items: center;
         }
 
+        /* UI OVERLAYS */
         #dailyRewardContainer {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+            position: absolute; top: 20px; left: 20px;
             background-color: var(--ui-overlay-bg);
-            padding: 15px;
-            border-radius: 10px;
-            z-index: 9999;
-            text-align: center;
-            border: 1px solid white;
+            padding: 15px; border-radius: 10px; z-index: 9999;
+            text-align: center; border: 1px solid white;
         }
 
         #statsContainer {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
+            position: absolute; bottom: 20px; left: 20px;
             background-color: var(--ui-overlay-bg);
-            padding: 15px;
-            border-radius: 10px;
-            z-index: 9999;
-            border: 1px solid white;
-            min-width: 180px;
-            pointer-events: none;
+            padding: 15px; border-radius: 10px; z-index: 9999;
+            border: 1px solid white; min-width: 180px; pointer-events: none;
         }
 
-        #statsContainer div {
-            font-size: 1.4rem;
-            margin: 5px 0;
-            white-space: nowrap;
-        }
+        #statsContainer div { font-size: 1.4rem; margin: 5px 0; white-space: nowrap; }
 
-        #resetButtonContainer {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
+        #resetButtonContainer { position: absolute; top: 20px; right: 20px; z-index: 9999; }
 
+        /* DYNAMIC BUTTONS */
         .main-button {
-            display: inline-block;
-            width: auto;
-            height: auto;
-            min-width: 300px;
-            padding: 40px 60px;
-            font-size: 5vw;
-            border: 0.8vw solid var(--button-border-color);
-            border-radius: 20px;
-            color: var(--font-color);
-            cursor: pointer;
-            transition: transform 0.1s, filter 0.1s;
-            background-color: transparent;
-            margin-bottom: 20px;
-            text-align: center;
+            display: inline-block; min-width: 300px; padding: 40px 60px;
+            font-size: 5vw; border: 0.8vw solid var(--button-border-color);
+            border-radius: 20px; color: var(--font-color); cursor: pointer;
+            transition: transform 0.1s; background-color: transparent;
+            margin-bottom: 20px; text-align: center;
         }
 
-        .main-button:active {
-            transform: scale(0.98);
-        }
+        .main-button:active { transform: scale(0.95); }
 
         .upgrade-button {
-            display: inline-block;
-            width: auto;
-            padding: 20px 40px;
-            font-size: 1.5rem;
-            background-color: var(--upgrade-button-bg);
+            display: inline-block; padding: 20px 40px; font-size: 1.5rem;
             border: 0.4vw solid var(--button-border-color);
-            border-radius: 15px;
-            color: var(--font-color);
-            cursor: pointer;
-            transition: background-color 0.3s;
+            border-radius: 15px; color: var(--font-color); cursor: pointer;
         }
 
+        /* STROBE EFFECTS */
         .rainbow-strobe {
             background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
             background-size: 400% 400%;
@@ -123,29 +88,9 @@
             100% { background-position: 0% 50%; }
         }
 
-        #claimButton {
-            background-color: green;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        #claimButton:disabled {
-            background-color: gray;
-            cursor: not-allowed;
-        }
-
-        #resetButton {
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+        #claimButton { background-color: green; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        #claimButton:disabled { background-color: gray; cursor: not-allowed; }
+        #resetButton { background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
 
         @media (max-width: 768px) {
             .main-button { font-size: 8vw; padding: 20px 40px; min-width: 200px; }
@@ -157,7 +102,7 @@
 <body>
 
     <div id="dailyRewardContainer">
-        <div id="rewardTimer">Loading...</div>
+        <div id="rewardTimer">Calculating...</div>
         <button id="claimButton">Claim Daily Reward (1.5x)</button>
     </div>
 
@@ -171,6 +116,14 @@
     </div>
 
     <script>
+        // LOAD SAVED DATA OR SET DEFAULTS
+        let timesClicked = BigInt(localStorage.getItem('sc_clicks') || "0");
+        let currentUpgradeCost = BigInt(localStorage.getItem('sc_cost') || "250");
+        let maxClicksPerRandom = BigInt(localStorage.getItem('sc_power') || "5");
+        let lastClaimTime = parseInt(localStorage.getItem('sc_claimTime') || "0");
+        
+        let clickHistory = [];
+
         const BACKGROUNDS = {
             default: 'url(\'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhQhK_wQIRUwpbM_pXJHn18sC8ovXBGirUpQ&s\')',
             level1: 'url(\'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvD90oZ0SLUt9Hizd90BlaEeI4BtMrHiO1HA&s\')',
@@ -186,18 +139,12 @@
             { value: 1_000_000_000_000_000_000_000_000_000n, bg: BACKGROUNDS.level4 }
         ];
 
-        let timesClicked = 0n;
-        let currentUpgradeCost = 250n;
-        let maxClicksPerRandom = 5n;
-        let clickHistory = [];
-        let lastClaimTime = localStorage.getItem('lastClaimTime') ? parseInt(localStorage.getItem('lastClaimTime'), 10) : 0;
-
         const clickSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav");
-        const celebrationSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3");
 
+        // CREATE BUTTONS
         const mainButton = document.createElement('button');
         mainButton.className = 'main-button rainbow-strobe';
-        mainButton.textContent = "0";
+        mainButton.textContent = timesClicked.toLocaleString();
         document.body.appendChild(mainButton);
 
         const upgradeButton = document.createElement('button');
@@ -211,6 +158,14 @@
         const rewardTimer = document.getElementById('rewardTimer');
         const resetButton = document.getElementById('resetButton');
 
+        // SAVE FUNCTION
+        function saveGame() {
+            localStorage.setItem('sc_clicks', timesClicked.toString());
+            localStorage.setItem('sc_cost', currentUpgradeCost.toString());
+            localStorage.setItem('sc_power', maxClicksPerRandom.toString());
+            localStorage.setItem('sc_claimTime', lastClaimTime.toString());
+        }
+
         function recordPoint(value) {
             clickHistory.push({ time: Date.now(), value: value });
         }
@@ -218,15 +173,11 @@
         function updateStats() {
             const now = Date.now();
             clickHistory = clickHistory.filter(item => now - item.time <= 60000);
-
-            let cps = 0n;
-            let cpm = 0n;
-
+            let cps = 0n, cpm = 0n;
             clickHistory.forEach(item => {
                 if (now - item.time <= 1000) cps += item.value;
                 cpm += item.value;
             });
-
             cpsDisplay.innerHTML = `<b>CPS:</b> ${cps.toLocaleString()}`;
             cpmDisplay.innerHTML = `<b>CPM:</b> ${cpm.toLocaleString()}`;
         }
@@ -234,50 +185,44 @@
         function updateVisuals() {
             let bg = BACKGROUNDS.default;
             for (let i = LEVEL_THRESHOLDS.length - 1; i >= 0; i--) {
-                if (timesClicked >= LEVEL_THRESHOLDS[i].value) {
-                    bg = LEVEL_THRESHOLDS[i].bg;
-                    break;
-                }
+                if (timesClicked >= LEVEL_THRESHOLDS[i].value) { bg = LEVEL_THRESHOLDS[i].bg; break; }
             }
             document.body.style.backgroundImage = bg;
+            mainButton.textContent = timesClicked.toLocaleString();
+            upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
         }
 
-        mainButton.onclick = () => {
+        // BUTTON ACTIONS
+        function doClick() {
             const reward = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
             timesClicked += reward;
             recordPoint(reward);
-
-            mainButton.textContent = timesClicked.toLocaleString();
             updateVisuals();
+            saveGame();
+            clickSound.currentTime = 0; clickSound.play().catch(()=>{});
+        }
 
-            clickSound.currentTime = 0;
-            clickSound.play().catch(() => {});
-        };
-
-        upgradeButton.onclick = () => {
+        function doUpgrade() {
             if (timesClicked >= currentUpgradeCost) {
                 timesClicked -= currentUpgradeCost;
                 currentUpgradeCost = BigInt(Math.floor(Number(currentUpgradeCost) * 2.9));
                 maxClicksPerRandom = BigInt(Math.floor(Number(maxClicksPerRandom) * 3));
-
-                mainButton.textContent = timesClicked.toLocaleString();
-                upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
                 updateVisuals();
+                saveGame();
             }
-        };
+        }
 
+        mainButton.addEventListener('click', (e) => { e.preventDefault(); doClick(); });
+        upgradeButton.addEventListener('click', (e) => { e.preventDefault(); doUpgrade(); });
+
+        // TIMER & RESET
         function updateTimer() {
-            const now = Date.now();
-            const wait = 24 * 60 * 60 * 1000;
-            const diff = wait - (now - lastClaimTime);
-
+            const diff = (24 * 60 * 60 * 1000) - (Date.now() - lastClaimTime);
             if (diff <= 0) {
                 rewardTimer.textContent = "Reward Ready!";
                 claimButton.disabled = false;
             } else {
-                const h = Math.floor(diff / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
+                const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
                 rewardTimer.textContent = `Next Reward: ${h}h ${m}m ${s}s`;
                 claimButton.disabled = true;
             }
@@ -285,38 +230,37 @@
 
         claimButton.onclick = () => {
             const bonus = timesClicked / 2n;
-            timesClicked += bonus;
-            recordPoint(bonus);
-
+            timesClicked += bonus; recordPoint(bonus);
             lastClaimTime = Date.now();
-            localStorage.setItem('lastClaimTime', lastClaimTime);
-            mainButton.textContent = timesClicked.toLocaleString();
-            updateTimer();
+            updateTimer(); updateVisuals(); saveGame();
         };
 
         resetButton.onclick = () => {
-            if (confirm("Reset everything?")) {
-                timesClicked = 0n;
-                currentUpgradeCost = 250n;
-                maxClicksPerRandom = 5n;
-                clickHistory = [];
-                lastClaimTime = 0;
-                localStorage.removeItem('lastClaimTime');
-                mainButton.textContent = "0";
-                upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
-                updateVisuals();
+            if(confirm("Wipe all progress?")){
+                localStorage.clear(); location.reload();
             }
         };
 
+        // ANTI-SPAM KEYBOARD PROTECTION
         window.addEventListener('keydown', (e) => {
-            if ((e.key === 'Enter' || e.key === ' ') && e.repeat) {
-                e.preventDefault();
-            }
-            if (e.key === 'Enter') {
-                e.preventDefault();
+            if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
+                e.preventDefault(); // Stop default browser "click" behavior when focused
             }
         });
 
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
+                // If the user was focused on a button, clicking Enter/Space 
+                // normally triggers a click. We blocked that in keydown.
+                // You can manually trigger a click here if you want keyboard support
+                // but only on release (preventing holding down).
+                if (document.activeElement === mainButton) doClick();
+                if (document.activeElement === upgradeButton) doUpgrade();
+            }
+        });
+
+        // INIT
+        updateVisuals();
         setInterval(updateStats, 100);
         setInterval(updateTimer, 1000);
         updateTimer();
