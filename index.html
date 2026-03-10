@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supa Clicker v1.3.3</title>
+    <title>Supa Clicker v1.4.0</title>
     <link rel="icon" href="https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/main/ButtonIcon.png">
 
     <style>
         :root {
             --ui-bg: rgba(0, 0, 0, 0.9);
             --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
         }
 
         body {
@@ -29,9 +30,8 @@
             width: 100%; height: 100%;
         }
 
-        /* --- THE CLASSIC BUTTON STYLE --- */
         .main-button {
-            width: 350px; height: 350px; font-size: 3rem; 
+            width: 350px; height: 350px; font-size: 2.5rem; 
             border: 12px solid white; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer; position: relative; text-align: center;
@@ -56,7 +56,6 @@
             to { box-shadow: 0 0 50px rgba(255,255,255,0.6); }
         }
 
-        /* Top Bar */
         #topUI {
             position: absolute; top: 0; width: 100%; height: 90px;
             background: var(--ui-bg); border-bottom: 3px solid white;
@@ -70,13 +69,11 @@
         #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, #00f2ff, #7000ff); transition: width 0.3s; }
         #levelText { position: absolute; width:100%; text-align:center; font-size: 1rem; top: 2px; text-shadow: 1px 1px black; font-weight: bold; }
 
-        /* Stats Panel */
         #statsPanel { 
             position: absolute; left: 20px; bottom: 20px; background: var(--ui-bg); 
-            padding: 20px; border: 2px solid white; border-radius: 15px; min-width: 220px; 
+            padding: 20px; border: 2px solid white; border-radius: 15px; min-width: 240px; 
         }
 
-        /* Shop Panel */
         #shopPanel { 
             position: absolute; right: 20px; top: 110px; bottom: 20px; width: 330px; 
             background: var(--ui-bg); padding: 15px; border: 2px solid white; border-radius: 15px; 
@@ -84,21 +81,20 @@
         }
 
         .shop-item { 
-            background: rgba(255,255,255,0.06); padding: 15px; border-radius: 12px; 
+            background: rgba(255,255,255,0.06); padding: 12px; border-radius: 12px; 
             border: 1px solid #555; cursor: pointer; transition: 0.2s;
         }
         .shop-item:hover { background: rgba(255,255,255,0.15); transform: translateX(-5px); }
         .shop-item b { color: #00f2ff; display: block; font-size: 1.1rem; }
-        .shop-item small { color: #ccc; display: block; margin-top: 2px; }
+        .shop-item small { color: #ccc; display: block; margin-top: 2px; font-size: 0.85rem; }
+        .shop-item .cost { color: #ffeb3b; font-weight: bold; display: block; margin-top: 5px; }
 
-        /* Floating Text */
         .particle {
             position: fixed; pointer-events: none; font-weight: bold; font-size: 2.2rem;
             animation: particleMove 0.8s forwards; text-shadow: 2px 2px 5px black; z-index: 1000;
         }
         @keyframes particleMove { 0% {opacity:1; transform:translateY(0);} 100% {opacity:0; transform:translateY(-180px) scale(1.5);} }
 
-        /* UI Elements */
         #comboContainer { width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 5px; overflow: hidden; }
         #comboBar { width: 0%; height: 100%; background: #00e5ff; }
         #rebirthBtn { background: #6200ea; color: white; padding: 10px 20px; border: 2px solid white; border-radius: 10px; cursor: pointer; font-weight: bold; }
@@ -118,7 +114,7 @@
     </div>
 
     <div id="statsPanel">
-        <div id="scoreLabel" style="font-size: 2.2rem; color: #ffeb3b; margin-bottom: 10px;">0</div>
+        <div id="scoreLabel" style="font-size: 2rem; color: #ffeb3b; margin-bottom: 10px;">0</div>
         <div><b>Manual Power:</b> <span id="pwrVal">5</span></div>
         <div style="margin-top:5px;"><b>Combo:</b> <span id="comboVal">x1.0</span></div>
         <div id="comboContainer"><div id="comboBar"></div></div>
@@ -127,40 +123,59 @@
     </div>
 
     <div id="shopPanel">
-        <h2 style="text-align: center; margin: 0;">Ω SHOP</h2>
-        <div class="shop-item" onclick="buy('pwr')"><b>Power Surge</b><small>+2.8x Manual Click Strength</small><span id="costPwr">Cost: 250</span></div>
-        <div class="shop-item" onclick="buy('auto')"><b>Quantum Helper</b><small>Automated clicks per second</small><span id="costAuto">Cost: 500</span></div>
-        <div class="shop-item" onclick="buy('eff')"><b>Helper Core</b><small>Helpers gain more of your power</small><span id="costEff">Cost: 5k</span></div>
-        <div class="shop-item" onclick="buy('critC')"><b>Crit Focus</b><small>+3% Chance for Massive Hits</small><span id="costCritC">Cost: 2.5k</span></div>
-        <div class="shop-item" onclick="buy('critD')"><b>Crit Burst</b><small>Increases Critical Multiplier</small><span id="costCritD">Cost: 25k</span></div>
-        <div class="shop-item" onclick="buy('multi')"><b>Dimensions</b><small>Global Point Multiplier</small><span id="costMulti">Cost: 10k</span></div>
-        <div class="shop-item" onclick="buy('rate')"><b>Clover Field</b><small>Faster Lucky Clover spawns</small><span id="costRate">Cost: 100k</span></div>
-        <div class="shop-item" onclick="buy('decay')"><b>Focus Mastery</b><small>Combo decays much slower</small><span id="costDecay">Cost: 250k</span></div>
+        <h2 style="text-align: center; margin: 0; color: var(--neon-blue);">Ω SHOP</h2>
+        <div class="shop-item" onclick="buy('pwr')"><b>Power Surge</b><small>+2.8x Manual Strength</small><span id="costPwr" class="cost">Cost: 250</span></div>
+        <div class="shop-item" onclick="buy('auto')"><b>Quantum Helper</b><small>Automated clicks per sec</small><span id="costAuto" class="cost">Cost: 500</span></div>
+        <div class="shop-item" onclick="buy('eff')"><b>Helper Core</b><small>Helpers gain efficiency</small><span id="costEff" class="cost">Cost: 5k</span></div>
+        <div class="shop-item" onclick="buy('critC')"><b>Crit Focus</b><small>+3% Chance for Massive Hits</small><span id="costCritC" class="cost">Cost: 2.5k</span></div>
+        <div class="shop-item" onclick="buy('critD')"><b>Crit Burst</b><small>Increases Critical Multiplier</small><span id="costCritD" class="cost">Cost: 25k</span></div>
+        <div class="shop-item" onclick="buy('multi')"><b>Dimensions</b><small>Global Point Multiplier</small><span id="costMulti" class="cost">Cost: 10k</span></div>
+        <div class="shop-item" onclick="buy('decay')"><b>Focus Mastery</b><small>Combo decays slower</small><span id="costDecay" class="cost">Cost: 250k</span></div>
+        <!-- New Items -->
+        <div class="shop-item" onclick="buy('warp')"><b>Time Warp</b><small>Increases game tick speed</small><span id="costWarp" class="cost">Cost: 1M</span></div>
+        <div class="shop-item" onclick="buy('void')"><b>Void Essence</b><small>Huge permanent multiplier</small><span id="costVoid" class="cost">Cost: 500M</span></div>
     </div>
 
     <div id="mainButton" class="main-button rainbow-strobe">0</div>
 </div>
 
 <script>
-    // --- STATE SETUP ---
-    let score = BigInt(localStorage.getItem('v7_score') || "0");
-    let clickPwr = BigInt(localStorage.getItem('v7_pwr') || "5");
-    let costPwr = BigInt(localStorage.getItem('v7_costPwr') || "250");
-    let helpers = parseInt(localStorage.getItem('v7_helpers') || "0");
-    let costAuto = BigInt(localStorage.getItem('v7_costAuto') || "500");
-    let helperEff = parseFloat(localStorage.getItem('v7_eff') || "0.5");
-    let costEff = BigInt(localStorage.getItem('v7_costEff') || "5000");
-    let critC = parseInt(localStorage.getItem('v7_critC') || "10");
-    let costCritC = BigInt(localStorage.getItem('v7_costCritC') || "2500");
-    let critD = parseInt(localStorage.getItem('v7_critD') || "10");
-    let costCritD = BigInt(localStorage.getItem('v7_costCritD') || "25000");
-    let globalMult = parseFloat(localStorage.getItem('v7_multi') || "1.0");
-    let costMulti = BigInt(localStorage.getItem('v7_costMulti') || "10000");
-    let rebirths = parseInt(localStorage.getItem('v7_rebirths') || "0");
-    let cloverRate = parseInt(localStorage.getItem('v7_rate') || "30000");
-    let costRate = BigInt(localStorage.getItem('v7_costRate') || "100000");
-    let comboDecay = parseFloat(localStorage.getItem('v7_decay') || "2.5");
-    let costDecay = BigInt(localStorage.getItem('v7_costDecay') || "250000");
+    // --- UTILS ---
+    function format(n) {
+        let num = typeof n === 'bigint' ? Number(n) : n;
+        if (num < 1e6) return Math.floor(num).toLocaleString();
+        return num.toExponential(2).replace('e+', 'e+');
+    }
+
+    // --- INITIAL STATE ---
+    const DEFAULTS = {
+        score: "0", pwr: "5", costPwr: "250", helpers: 0, costAuto: "500",
+        eff: 0.5, costEff: "5000", critC: 10, costCritC: "2500",
+        critD: 10, costCritD: "25000", multi: 1.0, costMulti: "10000",
+        rate: 30000, costRate: "100000", decay: 2.5, costDecay: "250000",
+        costWarp: "1000000", warp: 1.0, costVoid: "500000000", voidM: 1.0
+    };
+
+    let score = BigInt(localStorage.getItem('v8_score') || DEFAULTS.score);
+    let clickPwr = BigInt(localStorage.getItem('v8_pwr') || DEFAULTS.pwr);
+    let costPwr = BigInt(localStorage.getItem('v8_costPwr') || DEFAULTS.costPwr);
+    let helpers = parseInt(localStorage.getItem('v8_helpers') || DEFAULTS.helpers);
+    let costAuto = BigInt(localStorage.getItem('v8_costAuto') || DEFAULTS.costAuto);
+    let helperEff = parseFloat(localStorage.getItem('v8_eff') || DEFAULTS.eff);
+    let costEff = BigInt(localStorage.getItem('v8_costEff') || DEFAULTS.costEff);
+    let critC = parseInt(localStorage.getItem('v8_critC') || DEFAULTS.critC);
+    let costCritC = BigInt(localStorage.getItem('v8_costCritC') || DEFAULTS.costCritC);
+    let critD = parseInt(localStorage.getItem('v8_critD') || DEFAULTS.critD);
+    let costCritD = BigInt(localStorage.getItem('v8_costCritD') || DEFAULTS.costCritD);
+    let globalMult = parseFloat(localStorage.getItem('v8_multi') || DEFAULTS.multi);
+    let costMulti = BigInt(localStorage.getItem('v8_costMulti') || DEFAULTS.costMulti);
+    let rebirths = parseInt(localStorage.getItem('v8_rebirths') || "0");
+    let comboDecay = parseFloat(localStorage.getItem('v8_decay') || DEFAULTS.decay);
+    let costDecay = BigInt(localStorage.getItem('v8_costDecay') || DEFAULTS.costDecay);
+    let costWarp = BigInt(localStorage.getItem('v8_costWarp') || DEFAULTS.costWarp);
+    let warpFactor = parseFloat(localStorage.getItem('v8_warp') || DEFAULTS.warp);
+    let costVoid = BigInt(localStorage.getItem('v8_costVoid') || DEFAULTS.costVoid);
+    let voidMulti = parseFloat(localStorage.getItem('v8_voidM') || DEFAULTS.voidM);
 
     let combo = 0;
     let comboMult = 1.0;
@@ -171,47 +186,45 @@
         { name: "Starter", min: 0n, bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhQhK_wQIRUwpbM_pXJHn18sC8ovXBGirUpQ&s' },
         { name: "Moon", min: 500_000n, bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvD90oZ0SLUt9Hizd90BlaEeI4BtMrHiO1HA&s' },
         { name: "Galaxy", min: 1_000_000_000n, bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ0fLUcPj6yXtpt7TsigDNgcijL3CSWuSAzQ&s' },
-        { name: "Infinity", min: 1_000_000_000_000_000_000n, bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM9-ANfPq_7ESF0UHnzM6s3HLaSHie6F140Q&s' }
+        { name: "Infinity", min: 100_000_000_000_000n, bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM9-ANfPq_7ESF0UHnzM6s3HLaSHie6F140Q&s' },
+        { name: "Multiverse", min: 10n**18n, bg: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6-S7lS4G1lM3X-_73vG7D_Fz7q_0P9_vX7w&s' },
+        { name: "The Void", min: 10n**24n, bg: 'https://images.unsplash.com/photo-1538370965046-79c0d6907d47?q=80&w=1000&auto=format&fit=crop' },
+        { name: "Singularity", min: 10n**30n, bg: 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1000&auto=format&fit=crop' }
     ];
 
     function save() {
-        localStorage.setItem('v7_score', score.toString()); localStorage.setItem('v7_pwr', clickPwr.toString());
-        localStorage.setItem('v7_costPwr', costPwr.toString()); localStorage.setItem('v7_helpers', helpers.toString());
-        localStorage.setItem('v7_costAuto', costAuto.toString()); localStorage.setItem('v7_eff', helperEff.toString());
-        localStorage.setItem('v7_costEff', costEff.toString()); localStorage.setItem('v7_critC', critC.toString());
-        localStorage.setItem('v7_costCritC', costCritC.toString()); localStorage.setItem('v7_critD', critD.toString());
-        localStorage.setItem('v7_costCritD', costCritD.toString()); localStorage.setItem('v7_multi', globalMult.toString());
-        localStorage.setItem('v7_costMulti', costMulti.toString()); localStorage.setItem('v7_rebirths', rebirths.toString());
-        localStorage.setItem('v7_rate', cloverRate.toString()); localStorage.setItem('v7_costRate', costRate.toString());
-        localStorage.setItem('v7_decay', comboDecay.toString()); localStorage.setItem('v7_costDecay', costDecay.toString());
+        localStorage.setItem('v8_score', score.toString()); localStorage.setItem('v8_pwr', clickPwr.toString());
+        localStorage.setItem('v8_costPwr', costPwr.toString()); localStorage.setItem('v8_helpers', helpers.toString());
+        localStorage.setItem('v8_costAuto', costAuto.toString()); localStorage.setItem('v8_eff', helperEff.toString());
+        localStorage.setItem('v8_costEff', costEff.toString()); localStorage.setItem('v8_critC', critC.toString());
+        localStorage.setItem('v8_costCritC', costCritC.toString()); localStorage.setItem('v8_critD', critD.toString());
+        localStorage.setItem('v8_costCritD', costCritD.toString()); localStorage.setItem('v8_multi', globalMult.toString());
+        localStorage.setItem('v8_costMulti', costMulti.toString()); localStorage.setItem('v8_rebirths', rebirths.toString());
+        localStorage.setItem('v8_decay', comboDecay.toString()); localStorage.setItem('v8_costDecay', costDecay.toString());
+        localStorage.setItem('v8_costWarp', costWarp.toString()); localStorage.setItem('v8_warp', warpFactor.toString());
+        localStorage.setItem('v8_costVoid', costVoid.toString()); localStorage.setItem('v8_voidM', voidMulti.toString());
     }
 
     function updateUI() {
-        document.getElementById('scoreLabel').textContent = score.toLocaleString();
-        document.getElementById('mainButton').textContent = score.toLocaleString();
-        document.getElementById('pwrVal').textContent = clickPwr.toLocaleString();
+        document.getElementById('scoreLabel').textContent = format(score);
+        document.getElementById('mainButton').textContent = format(score);
+        document.getElementById('pwrVal').textContent = format(clickPwr);
         document.getElementById('comboVal').textContent = "x" + comboMult.toFixed(1);
-        document.getElementById('multVal').textContent = globalMult.toFixed(1) + "x";
+        document.getElementById('multVal').textContent = format(globalMult * voidMulti) + "x";
         document.getElementById('critCVal').textContent = critC;
         document.getElementById('critDVal').textContent = critD;
         document.getElementById('rebirthBtn').textContent = `Rebirth (${rebirths})`;
 
-        // Costs
-        document.getElementById('costPwr').textContent = `Cost: ${costPwr.toLocaleString()}`;
-        document.getElementById('costAuto').textContent = `Cost: ${costAuto.toLocaleString()}`;
-        document.getElementById('costEff').textContent = `Cost: ${costEff.toLocaleString()} (${Math.round(helperEff*100)}%)`;
-        document.getElementById('costCritC').textContent = `Cost: ${costCritC.toLocaleString()}`;
-        document.getElementById('costCritD').textContent = `Cost: ${costCritD.toLocaleString()}`;
-        document.getElementById('costMulti').textContent = `Cost: ${costMulti.toLocaleString()}`;
-        document.getElementById('costRate').textContent = `Cost: ${costRate.toLocaleString()}`;
-        document.getElementById('costDecay').textContent = `Cost: ${costDecay.toLocaleString()}`;
+        document.getElementById('costPwr').textContent = `Cost: ${format(costPwr)}`;
+        document.getElementById('costAuto').textContent = `Cost: ${format(costAuto)}`;
+        document.getElementById('costEff').textContent = `Cost: ${format(costEff)} (${Math.round(helperEff*100)}%)`;
+        document.getElementById('costCritC').textContent = `Cost: ${format(costCritC)}`;
+        document.getElementById('costCritD').textContent = `Cost: ${format(costCritD)}`;
+        document.getElementById('costMulti').textContent = `Cost: ${format(costMulti)}`;
+        document.getElementById('costDecay').textContent = `Cost: ${format(costDecay)}`;
+        document.getElementById('costWarp').textContent = `Cost: ${format(costWarp)} (x${warpFactor.toFixed(1)})`;
+        document.getElementById('costVoid').textContent = `Cost: ${format(costVoid)}`;
 
-        // Dynamic Zoom
-        let s = 1.0, len = score.toString().length;
-        if(len > 15) s = 0.85; if(len > 30) s = 0.70;
-        document.getElementById('gameContainer').style.transform = `scale(${s})`;
-
-        // Progress
         let idx = 0; for(let i=WORLDS.length-1; i>=0; i--) { if(score >= WORLDS[i].min) { idx = i; break; } }
         document.body.style.backgroundImage = `url('${WORLDS[idx].bg}')`;
         const n = WORLDS[idx+1];
@@ -236,22 +249,20 @@
     function doClick(e) {
         if(e) e.preventDefault();
         sndClick.currentTime = 0; sndClick.play().catch(()=>{});
-        if(score >= 1_000_000_000_000_000_000n) { sndOi.currentTime = 0; sndOi.play().catch(()=>{}); }
+        if(score >= 10n**16n) { sndOi.currentTime = 0; sndOi.play().catch(()=>{}); }
         
-        // Combo
         combo = Math.min(100, combo + 4);
         comboMult = 1.0 + (combo / 40);
 
-        // Score Calc
         let isCrit = (Math.random() * 100) < critC;
         let gain = BigInt(Math.floor(Math.random() * Number(clickPwr))) + 1n;
         if(isCrit) gain *= BigInt(critD);
-        gain = BigInt(Math.floor(Number(gain) * globalMult * (rebirths + 1) * comboMult));
+        gain = BigInt(Math.floor(Number(gain) * globalMult * voidMulti * (rebirths + 1) * comboMult));
 
         score += gain;
         const x = e ? (e.clientX || window.innerWidth/2) : window.innerWidth/2;
         const y = e ? (e.clientY || window.innerHeight/2) : window.innerHeight/2;
-        spawnParticle(x, y, (isCrit?"🔥":"+")+gain.toLocaleString(), isCrit?"#ff9800":"white");
+        spawnParticle(x, y, (isCrit?"🔥":"+")+format(gain), isCrit?"#ff9800":"white");
         updateUI(); save();
     }
 
@@ -262,45 +273,49 @@
         if(t==='critC' && score>=costCritC && critC<100) { score-=costCritC; critC+=3; costCritC*=7n; }
         if(t==='critD' && score>=costCritD) { score-=costCritD; critD+=5; costCritD*=10n; }
         if(t==='multi' && score>=costMulti) { score-=costMulti; globalMult*=1.8; costMulti*=15n; }
-        if(t==='rate' && score>=costRate) { score-=costRate; cloverRate=Math.max(4000, cloverRate-5000); costRate*=20n; startClover(); }
         if(t==='decay' && score>=costDecay) { score-=costDecay; comboDecay=Math.max(0.1, comboDecay-0.4); costDecay*=15n; }
+        if(t==='warp' && score>=costWarp) { score-=costWarp; warpFactor+=0.2; costWarp*=20n; }
+        if(t==='void' && score>=costVoid) { score-=costVoid; voidMulti *= 5.0; costVoid *= 50n; }
         updateUI(); save();
-    }
-
-    let cInt;
-    function startClover() {
-        if(cInt) clearInterval(cInt);
-        cInt = setInterval(() => {
-            const cl = document.createElement('div');
-            cl.style.cssText = "position:absolute; width:70px; height:70px; background:gold; border-radius:50%; box-shadow:0 0 20px gold; cursor:pointer; z-index:500; display:flex; align-items:center; justify-content:center; font-size:2.5rem; animation:pop 0.5s forwards;";
-            cl.innerHTML = '🍀';
-            cl.style.left = Math.random()*80+10+"%"; cl.style.top = Math.random()*80+10+"%";
-            document.body.appendChild(cl);
-            cl.onclick = () => { 
-                const b = score/10n + 1000n; score += b;
-                spawnParticle(window.innerWidth/2, window.innerHeight/2, "LUCKY +"+b.toLocaleString(), "gold");
-                cl.remove(); updateUI();
-            };
-            setTimeout(() => { if(cl.parentNode) cl.remove(); }, 6000);
-        }, cloverRate);
     }
 
     document.getElementById('rebirthBtn').onclick = () => {
         const target = 100_000_000_000n;
         if(score >= target) {
-            if(confirm("REBIRTH? Reset for a 2x Multiplier boost?")) {
-                rebirths++; score=0n; clickPwr=5n; helpers=0; globalMult=1.0; critC=10; save(); location.reload();
+            if(confirm("REBIRTH? This resets all shop prices but keeps your Rebirth Multiplier!")) {
+                rebirths++;
+                // Reset to DEFAULTS
+                score = BigInt(DEFAULTS.score);
+                clickPwr = BigInt(DEFAULTS.pwr);
+                costPwr = BigInt(DEFAULTS.costPwr);
+                helpers = DEFAULTS.helpers;
+                costAuto = BigInt(DEFAULTS.costAuto);
+                helperEff = DEFAULTS.eff;
+                costEff = BigInt(DEFAULTS.costEff);
+                critC = DEFAULTS.critC;
+                costCritC = BigInt(DEFAULTS.costCritC);
+                critD = DEFAULTS.critD;
+                costCritD = BigInt(DEFAULTS.costCritD);
+                globalMult = DEFAULTS.multi;
+                costMulti = BigInt(DEFAULTS.costMulti);
+                comboDecay = DEFAULTS.decay;
+                costDecay = BigInt(DEFAULTS.costDecay);
+                costWarp = BigInt(DEFAULTS.costWarp);
+                warpFactor = DEFAULTS.warp;
+                costVoid = BigInt(DEFAULTS.costVoid);
+                voidMulti = DEFAULTS.voidM;
+                save(); location.reload();
             }
-        } else alert(`Need ${target.toLocaleString()} points to Rebirth!`);
+        } else alert(`Need ${format(target)} points to Rebirth!`);
     }
 
     setInterval(() => {
         if(helpers > 0) {
-            let aGain = BigInt(Math.floor(Number(clickPwr) * helpers * helperEff));
-            aGain = BigInt(Math.floor(Number(aGain) * globalMult * (rebirths + 1)));
+            let aGain = BigInt(Math.floor(Number(clickPwr) * helpers * helperEff * (warpFactor)));
+            aGain = BigInt(Math.floor(Number(aGain) * globalMult * voidMulti * (rebirths + 1)));
             score += aGain; updateUI();
         }
-        combo = Math.max(0, combo - comboDecay);
+        combo = Math.max(0, combo - (comboDecay / warpFactor));
         comboMult = 1.0 + (combo / 40);
         document.getElementById('comboBar').style.width = combo + "%";
     }, 1000);
@@ -308,7 +323,7 @@
     document.getElementById('mainButton').onmousedown = doClick;
     window.onkeyup = (e) => { if([' ','Enter'].includes(e.key)) doClick(); };
     document.getElementById('resetBtn').onclick = () => { if(confirm("Full Wipe?")) { localStorage.clear(); location.reload(); }};
-    startClover(); updateUI();
+    updateUI();
 </script>
 </body>
 </html>
