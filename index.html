@@ -39,7 +39,6 @@
             align-items: center;
         }
 
-        /* UI OVERLAYS */
         #dailyRewardContainer {
             position: absolute; top: 20px; left: 20px;
             background-color: var(--ui-overlay-bg);
@@ -58,7 +57,6 @@
 
         #resetButtonContainer { position: absolute; top: 20px; right: 20px; z-index: 9999; }
 
-        /* DYNAMIC BUTTONS */
         .main-button {
             display: inline-block; min-width: 300px; padding: 40px 60px;
             font-size: 5vw; border: 0.8vw solid var(--button-border-color);
@@ -75,7 +73,6 @@
             border-radius: 15px; color: var(--font-color); cursor: pointer;
         }
 
-        /* STROBE EFFECTS */
         .rainbow-strobe {
             background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
             background-size: 400% 400%;
@@ -116,12 +113,12 @@
     </div>
 
     <script>
-        // LOAD SAVED DATA OR SET DEFAULTS
         let timesClicked = BigInt(localStorage.getItem('sc_clicks') || "0");
         let currentUpgradeCost = BigInt(localStorage.getItem('sc_cost') || "250");
         let maxClicksPerRandom = BigInt(localStorage.getItem('sc_power') || "5");
         let lastClaimTime = parseInt(localStorage.getItem('sc_claimTime') || "0");
         
+        // clickHistory now only stores timestamps of when a click occurred
         let clickHistory = [];
 
         const BACKGROUNDS = {
@@ -142,7 +139,6 @@
         const clickSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav");
         const oiSound = new Audio("https://github.com/zOcMYT/supaclicker.github.io/raw/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3");
 
-        // CREATE BUTTONS
         const mainButton = document.createElement('button');
         mainButton.className = 'main-button rainbow-strobe';
         mainButton.textContent = timesClicked.toLocaleString();
@@ -159,7 +155,6 @@
         const rewardTimer = document.getElementById('rewardTimer');
         const resetButton = document.getElementById('resetButton');
 
-        // SAVE FUNCTION
         function saveGame() {
             localStorage.setItem('sc_clicks', timesClicked.toString());
             localStorage.setItem('sc_cost', currentUpgradeCost.toString());
@@ -167,20 +162,24 @@
             localStorage.setItem('sc_claimTime', lastClaimTime.toString());
         }
 
-        function recordPoint(value) {
-            clickHistory.push({ time: Date.now(), value: value });
+        // Just records the timestamp of a physical click
+        function recordClick() {
+            clickHistory.push(Date.now());
         }
 
         function updateStats() {
             const now = Date.now();
-            clickHistory = clickHistory.filter(item => now - item.time <= 60000);
-            let cps = 0n, cpm = 0n;
-            clickHistory.forEach(item => {
-                if (now - item.time <= 1000) cps += item.value;
-                cpm += item.value;
-            });
-            cpsDisplay.innerHTML = `<b>CPS:</b> ${cps.toLocaleString()}`;
-            cpmDisplay.innerHTML = `<b>CPM:</b> ${cpm.toLocaleString()}`;
+            // Remove clicks older than 60 seconds
+            clickHistory = clickHistory.filter(timestamp => now - timestamp <= 60000);
+            
+            // CPS: Number of timestamps within the last 1000ms
+            const cpsCount = clickHistory.filter(timestamp => now - timestamp <= 1000).length;
+            
+            // CPM: Total number of timestamps in our 60-second window
+            const cpmCount = clickHistory.length;
+
+            cpsDisplay.innerHTML = `<b>CPS:</b> ${cpsCount.toLocaleString()}`;
+            cpmDisplay.innerHTML = `<b>CPM:</b> ${cpmCount.toLocaleString()}`;
         }
 
         function updateVisuals() {
@@ -193,13 +192,11 @@
             upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
         }
 
-        // BUTTON ACTIONS
         function doClick() {
             const reward = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
             timesClicked += reward;
-            recordPoint(reward);
+            recordClick(); // Tracks the frequency, not the BigInt value
             
-            // Check for last level sound
             const lastLevelThreshold = LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1].value;
             if (timesClicked >= lastLevelThreshold) {
                 oiSound.currentTime = 0;
@@ -226,7 +223,6 @@
         mainButton.addEventListener('click', (e) => { e.preventDefault(); doClick(); });
         upgradeButton.addEventListener('click', (e) => { e.preventDefault(); doUpgrade(); });
 
-        // TIMER & RESET
         function updateTimer() {
             const diff = (24 * 60 * 60 * 1000) - (Date.now() - lastClaimTime);
             if (diff <= 0) {
@@ -241,7 +237,7 @@
 
         claimButton.onclick = () => {
             const bonus = timesClicked / 2n;
-            timesClicked += bonus; recordPoint(bonus);
+            timesClicked += bonus;
             lastClaimTime = Date.now();
             updateTimer(); updateVisuals(); saveGame();
         };
@@ -252,11 +248,8 @@
             }
         };
 
-        // ANTI-SPAM KEYBOARD PROTECTION
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') {
-                e.preventDefault();
-            }
+            if (e.key === 'Enter' || e.key === ' ' || e.code === 'Space') e.preventDefault();
         });
 
         window.addEventListener('keyup', (e) => {
@@ -266,7 +259,6 @@
             }
         });
 
-        // INIT
         updateVisuals();
         setInterval(updateStats, 100);
         setInterval(updateTimer, 1000);
