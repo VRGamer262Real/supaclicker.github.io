@@ -17,7 +17,6 @@
             --font-default: 'Marker Felt', fantasy;
             --font-color: white;
             --button-border-color: #ffffff;
-            --upgrade-button-bg: rgb(54, 41, 58);
             --ui-overlay-bg: rgba(0, 0, 0, 0.8);
         }
 
@@ -37,6 +36,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            user-select: none;
         }
 
         #dailyRewardContainer {
@@ -61,22 +61,45 @@
             display: inline-block; min-width: 300px; padding: 40px 60px;
             font-size: 5vw; border: 0.8vw solid var(--button-border-color);
             border-radius: 20px; color: var(--font-color); cursor: pointer;
-            transition: transform 0.1s; background-color: transparent;
+            transition: transform 0.05s; background-color: transparent;
             margin-bottom: 20px; text-align: center;
+            position: relative;
         }
 
-        .main-button:active { transform: scale(0.95); }
+        .main-button:active { transform: scale(0.9); }
 
         .upgrade-button {
             display: inline-block; padding: 20px 40px; font-size: 1.5rem;
             border: 0.4vw solid var(--button-border-color);
             border-radius: 15px; color: var(--font-color); cursor: pointer;
+            transition: background 0.3s;
         }
+
+        .upgrade-button:hover { background: rgba(255,255,255,0.1); }
 
         .rainbow-strobe {
             background-image: linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet);
             background-size: 400% 400%;
             animation: rainbow 3s linear infinite;
+        }
+
+        /* Floating Text Animation */
+        .floating-text {
+            position: absolute;
+            pointer-events: none;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px black;
+            animation: floatUp 0.8s ease-out forwards;
+            z-index: 10000;
+        }
+
+        .crit-text { color: #ffcc00; font-size: 3rem; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-150px) scale(1.2); opacity: 0; }
         }
 
         @keyframes rainbow {
@@ -118,7 +141,6 @@
         let maxClicksPerRandom = BigInt(localStorage.getItem('sc_power') || "5");
         let lastClaimTime = parseInt(localStorage.getItem('sc_claimTime') || "0");
         
-        // clickHistory now only stores timestamps of when a click occurred
         let clickHistory = [];
 
         const BACKGROUNDS = {
@@ -162,22 +184,26 @@
             localStorage.setItem('sc_claimTime', lastClaimTime.toString());
         }
 
-        // Just records the timestamp of a physical click
+        // Floating Text Logic
+        function showFloatingText(amount, x, y, isCrit) {
+            const text = document.createElement('div');
+            text.className = `floating-text ${isCrit ? 'crit-text' : ''}`;
+            text.textContent = `+${amount.toLocaleString()}${isCrit ? ' CRIT!' : ''}`;
+            text.style.left = `${x}px`;
+            text.style.top = `${y}px`;
+            document.body.appendChild(text);
+            setTimeout(() => text.remove(), 800);
+        }
+
         function recordClick() {
             clickHistory.push(Date.now());
         }
 
         function updateStats() {
             const now = Date.now();
-            // Remove clicks older than 60 seconds
             clickHistory = clickHistory.filter(timestamp => now - timestamp <= 60000);
-            
-            // CPS: Number of timestamps within the last 1000ms
             const cpsCount = clickHistory.filter(timestamp => now - timestamp <= 1000).length;
-            
-            // CPM: Total number of timestamps in our 60-second window
             const cpmCount = clickHistory.length;
-
             cpsDisplay.innerHTML = `<b>CPS:</b> ${cpsCount.toLocaleString()}`;
             cpmDisplay.innerHTML = `<b>CPM:</b> ${cpmCount.toLocaleString()}`;
         }
@@ -192,11 +218,21 @@
             upgradeButton.textContent = `Upgrade Click Value (${currentUpgradeCost.toLocaleString()})`;
         }
 
-        function doClick() {
-            const reward = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
-            timesClicked += reward;
-            recordClick(); // Tracks the frequency, not the BigInt value
+        function doClick(e) {
+            let reward = BigInt(Math.floor(Math.random() * Number(maxClicksPerRandom))) + 1n;
             
+            // Critical Click Logic (10% chance for 10x reward)
+            const isCrit = Math.random() < 0.10;
+            if (isCrit) reward *= 10n;
+
+            timesClicked += reward;
+            recordClick();
+            
+            // Show floating text at mouse or button center
+            const x = e ? e.clientX : window.innerWidth / 2;
+            const y = e ? e.clientY : window.innerHeight / 2;
+            showFloatingText(reward, x, y, isCrit);
+
             const lastLevelThreshold = LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1].value;
             if (timesClicked >= lastLevelThreshold) {
                 oiSound.currentTime = 0;
@@ -220,7 +256,7 @@
             }
         }
 
-        mainButton.addEventListener('click', (e) => { e.preventDefault(); doClick(); });
+        mainButton.addEventListener('mousedown', (e) => { e.preventDefault(); doClick(e); });
         upgradeButton.addEventListener('click', (e) => { e.preventDefault(); doUpgrade(); });
 
         function updateTimer() {
