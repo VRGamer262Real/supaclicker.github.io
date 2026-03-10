@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supa Clicker</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/refs/heads/main/ButtonIcon.png">
+    <title>Supa Clicker: Reborn</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/main/ButtonIcon.png">
 
     <style>
         :root {
@@ -13,7 +13,7 @@
             --level2-bg-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ0fLUcPj6yXtpt7TsigDNgcijL3CSWuSAzQ&s');
             --level3-bg-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTg95X8tdImD1AZZ0dEnSCZdEx3t3iWyXwqsA&s');
             --level4-bg-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSM9-ANfPq_7ESF0UHnzM6s3HLaSHie6F140Q&s');
-            --ui-overlay-bg: rgba(0, 0, 0, 0.88);
+            --ui-overlay-bg: rgba(0, 0, 0, 0.9);
         }
 
         body {
@@ -27,6 +27,14 @@
             user-select: none;
         }
 
+        /* Screen Shake Effect */
+        .shake { animation: shakeAnim 0.1s linear; }
+        @keyframes shakeAnim {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-2px, -1px); }
+            100% { transform: translate(1px, 1px); }
+        }
+
         /* Top Bar */
         #topBar {
             position: absolute; top: 0; width: 100%; height: 90px;
@@ -35,43 +43,49 @@
         }
 
         #progessContainer { 
-            width: 40%; height: 25px; background: #222; 
+            width: 35%; height: 25px; background: #222; 
             border: 2px solid white; border-radius: 12px; 
             position: relative; overflow: hidden; 
         }
         #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, #4caf50, #8bc34a, #ffeb3b); transition: width 0.2s; }
         #levelText { position: absolute; width: 100%; text-align: center; top: 2px; font-size: 1rem; text-shadow: 1px 1px 2px black; font-weight: bold; }
 
-        /* Left Stats */
+        /* Combo Bar */
+        #comboBarContainer {
+            position: absolute; bottom: 120px; width: 250px; height: 15px;
+            background: #333; border: 2px solid white; border-radius: 10px; overflow: hidden;
+        }
+        #comboBar { width: 0%; height: 100%; background: #00e5ff; transition: width 0.1s linear; }
+
+        /* Stats & Shop */
         #statsContainer {
             position: absolute; left: 20px; bottom: 20px;
-            background: var(--ui-overlay-bg); padding: 20px; border-radius: 15px;
+            background: var(--ui-overlay-bg); padding: 15px; border-radius: 15px;
             border: 2px solid white; z-index: 100; min-width: 200px;
         }
 
-        /* Right Shop */
         #shopContainer {
             position: absolute; right: 20px; top: 110px; bottom: 20px;
-            width: 300px; background: var(--ui-overlay-bg); padding: 15px;
+            width: 280px; background: var(--ui-overlay-bg); padding: 15px;
             border-radius: 15px; border: 2px solid white; z-index: 100;
-            display: flex; flex-direction: column; gap: 12px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 10px; overflow-y: auto;
         }
 
         .shop-item {
             background: rgba(255,255,255,0.08); padding: 12px; border-radius: 10px;
             border: 1px solid #666; cursor: pointer; transition: 0.2s;
         }
-        .shop-item:hover { background: rgba(255,255,255,0.15); transform: scale(1.02); }
-        .shop-item:active { transform: scale(0.96); }
-        .shop-item b { color: #ffeb3b; font-size: 1.1rem; }
+        .shop-item:hover:not(.disabled) { background: rgba(255,255,255,0.15); transform: scale(1.02); }
+        .shop-item b { color: #ffeb3b; }
+        .disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Main Center Piece */
+        /* Main Component */
         #mainButton {
-            width: 320px; height: 320px; font-size: 2.5rem; 
-            border: 12px solid white; border-radius: 50%;
+            width: 300px; height: 300px; font-size: 2.2rem; 
+            border: 10px solid white; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer; position: relative; text-align: center;
-            background: rgba(0,0,0,0.4); box-shadow: 0 0 40px rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.4); box-shadow: 0 0 30px rgba(255,255,255,0.2);
             transition: transform 0.05s; z-index: 10;
         }
         #mainButton:active { transform: scale(0.9); }
@@ -82,7 +96,7 @@
             60% {border-color: cyan;} 80% {border-color: magenta;} 100% {border-color: red;}
         }
 
-        /* Particles */
+        /* Floating Text */
         .particle {
             position: fixed; pointer-events: none;
             font-size: 2.2rem; font-weight: bold; text-shadow: 2px 2px 4px black;
@@ -94,9 +108,8 @@
         }
         .crit-p { color: #ff9800; font-size: 3.2rem; }
 
-        button#resetBtn { background: #d32f2f; color: white; border: 1px solid white; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-        #shopContainer::-webkit-scrollbar { width: 6px; }
-        #shopContainer::-webkit-scrollbar-thumb { background: #aaa; border-radius: 10px; }
+        button#resetBtn { background: #d32f2f; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; }
+        #rebirthBtn { background: #6200ea; color: white; border: 2px solid white; padding: 10px; cursor: pointer; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -106,90 +119,72 @@
             <div id="progressBar"></div>
             <div id="levelText">Level: Loading...</div>
         </div>
-        <div id="dailyRewardSection">
-            <span id="rewardTimer">00:00:00</span>
-            <button id="claimBtn" style="padding: 6px 14px; background: #2e7d32; color: white; border: none; border-radius: 6px; cursor: pointer;">Daily Boost</button>
-        </div>
-        <button id="resetBtn">Hard Reset</button>
+        <button id="rebirthBtn">Rebirth (0)</button>
+        <button id="resetBtn">Reset</button>
     </div>
 
     <div id="statsContainer">
-        <div id="scoreDisplay" style="font-size: 2rem; color: #ffeb3b; margin-bottom: 10px;">0</div>
+        <div id="scoreDisplay" style="font-size: 1.8rem; color: #ffeb3b; margin-bottom: 5px;">0</div>
+        <div><b>Multiplier:</b> <span id="multVal">1x</span></div>
         <div><b>CPS:</b> <span id="cpsVal">0</span></div>
-        <div><b>CPM:</b> <span id="cpmVal">0</span></div>
         <div><b>Auto-CPS:</b> <span id="autoVal">0</span></div>
-        <div style="margin-top:5px; font-size: 0.9rem; opacity: 0.8;"><b>Crit Chance:</b> <span id="critChanceVal">10</span>%</div>
+        <div id="comboDisplay" style="color: #00e5ff; font-weight: bold; font-size: 1.2rem;">Combo x1.0</div>
+    </div>
+
+    <div id="comboBarContainer">
+        <div id="comboBar"></div>
     </div>
 
     <div id="shopContainer">
-        <h2 style="margin: 0 0 10px 0; text-align: center; letter-spacing: 2px;">UPGRADES</h2>
-        
-        <div class="shop-item" id="buyClick">
-            <b>Manual Power</b><br>
-            <span id="clickCost">Cost: 250</span><br>
-            <small>Increase points per click</small>
-        </div>
-
-        <div class="shop-item" id="buyAuto">
-            <b>Helper Bot</b><br>
-            <span id="autoCost">Cost: 500</span><br>
-            <small>Generates points every second</small>
-        </div>
-
-        <div class="shop-item" id="buyCrit">
-            <b>Critical Focus</b><br>
-            <span id="critCost">Cost: 2,500</span><br>
-            <small>+2% chance for 10x Critical Hits</small>
-        </div>
-
-        <div class="shop-item" id="buyMult">
-            <b>Mega Multiplier</b><br>
-            <span id="multCost">Cost: 10,000</span><br>
-            <small>Permanently multiplies all gains by 1.5x</small>
-        </div>
+        <h2 style="margin: 0; text-align: center;">SHOP</h2>
+        <div class="shop-item" id="buyClick"><b>Manual Power</b><br><span id="clickCost">250</span></div>
+        <div class="shop-item" id="buyAuto"><b>Helper Bot</b><br><span id="autoCost">500</span></div>
+        <div class="shop-item" id="buyCrit"><b>Crit Chance</b><br><span id="critCost">2,500</span></div>
+        <div class="shop-item" id="buyMult"><b>Super Multi</b><br><span id="mCost">10,000</span></div>
     </div>
 
     <div id="mainButton" class="rainbow-strobe">0</div>
 
     <script>
         // --- GAME STATE ---
-        let score = BigInt(localStorage.getItem('v3_score') || "0");
-        let clickPower = BigInt(localStorage.getItem('v3_pwr') || "5");
-        let clickCost = BigInt(localStorage.getItem('v3_cCost') || "250");
-        let autoCPS = parseInt(localStorage.getItem('v3_auto') || "0");
-        let autoCost = BigInt(localStorage.getItem('v3_aCost') || "500");
-        let critChance = parseInt(localStorage.getItem('v3_critChance') || "10"); 
-        let critCost = BigInt(localStorage.getItem('v3_critCost') || "2500");
-        let globalMult = parseFloat(localStorage.getItem('v3_mult') || "1.0");
-        let multCost = BigInt(localStorage.getItem('v3_mCost') || "10000");
-        let lastClaim = parseInt(localStorage.getItem('v3_claim') || "0");
+        let score = BigInt(localStorage.getItem('v4_score') || "0");
+        let clickPower = BigInt(localStorage.getItem('v4_pwr') || "5");
+        let clickCost = BigInt(localStorage.getItem('v4_cCost') || "250");
+        let autoCPS = parseInt(localStorage.getItem('v4_auto') || "0");
+        let autoCost = BigInt(localStorage.getItem('v4_aCost') || "500");
+        let critChance = parseInt(localStorage.getItem('v4_critC') || "10"); 
+        let critCost = BigInt(localStorage.getItem('v4_critCost') || "2500");
+        let shopMult = parseFloat(localStorage.getItem('v4_mult') || "1.0");
+        let shopMultCost = BigInt(localStorage.getItem('v4_mCost') || "10000");
+        let rebirths = parseInt(localStorage.getItem('v4_rebirths') || "0");
         
+        // Combo Mechanics
+        let comboMeter = 0;
+        let comboBonus = 1.0;
         let clicks = [];
 
-        // --- AUDIO ---
-        const sndClick = new Audio("https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/raw/main/Mouseclick.wav");
+        // --- AUDIO (Fixed URLs) ---
+        const sndClick = new Audio("https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/main/Mouseclick.wav");
         const sndOi = new Audio("https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/main/oi%20oi%20oe%20oi%20a%20eye%20eye.mp3");
 
         const WORLDS = [
             { name: "Starter", min: 0n, bg: 'var(--default-bg-image)' },
-            { name: "Novice", min: 10_000n, bg: 'var(--default-bg-image)' },
-            { name: "Expert", min: 1_000_000n, bg: 'var(--level1-bg-image)' },
-            { name: "Billionaire", min: 1_000_000_000n, bg: 'var(--level2-bg-image)' },
-            { name: "Trillionaire", min: 1_000_000_000_000n, bg: 'var(--level3-bg-image)' },
-            { name: "Transcendent", min: 1_000_000_000_000_000n, bg: 'var(--level4-bg-image)' }
+            { name: "Novice", min: 50_000n, bg: 'var(--default-bg-image)' },
+            { name: "Expert", min: 5_000_000n, bg: 'var(--level1-bg-image)' },
+            { name: "Godly", min: 1_000_000_000_000_000_000n, bg: 'var(--level4-bg-image)' }
         ];
 
         function save() {
-            localStorage.setItem('v3_score', score.toString());
-            localStorage.setItem('v3_pwr', clickPower.toString());
-            localStorage.setItem('v3_cCost', clickCost.toString());
-            localStorage.setItem('v3_auto', autoCPS.toString());
-            localStorage.setItem('v3_aCost', autoCost.toString());
-            localStorage.setItem('v3_critChance', critChance.toString());
-            localStorage.setItem('v3_critCost', critCost.toString());
-            localStorage.setItem('v3_mult', globalMult.toString());
-            localStorage.setItem('v3_mCost', multCost.toString());
-            localStorage.setItem('v3_claim', lastClaim.toString());
+            localStorage.setItem('v4_score', score.toString());
+            localStorage.setItem('v4_pwr', clickPower.toString());
+            localStorage.setItem('v4_cCost', clickCost.toString());
+            localStorage.setItem('v4_auto', autoCPS.toString());
+            localStorage.setItem('v4_aCost', autoCost.toString());
+            localStorage.setItem('v4_critC', critChance.toString());
+            localStorage.setItem('v4_critCost', critCost.toString());
+            localStorage.setItem('v4_mult', shopMult.toString());
+            localStorage.setItem('v4_mCost', shopMultCost.toString());
+            localStorage.setItem('v4_rebirths', rebirths.toString());
         }
 
         function createP(x, y, txt, ist) {
@@ -202,42 +197,60 @@
         }
 
         function updateUI() {
+            const totalMult = shopMult * (rebirths + 1) * comboBonus;
+            
             document.getElementById('scoreDisplay').textContent = score.toLocaleString();
             document.getElementById('mainButton').textContent = score.toLocaleString();
-            document.getElementById('clickCost').textContent = `Cost: ${clickCost.toLocaleString()}`;
-            document.getElementById('autoCost').textContent = `Cost: ${autoCost.toLocaleString()}`;
-            document.getElementById('critCost').textContent = `Cost: ${critCost.toLocaleString()}`;
-            document.getElementById('multCost').textContent = `Cost: ${multCost.toLocaleString()}`;
+            document.getElementById('clickCost').textContent = "Cost: " + clickCost.toLocaleString();
+            document.getElementById('autoCost').textContent = "Cost: " + autoCost.toLocaleString();
+            document.getElementById('critCost').textContent = "Cost: " + critCost.toLocaleString();
+            document.getElementById('mCost').textContent = "Cost: " + shopMultCost.toLocaleString();
+            document.getElementById('multVal').textContent = totalMult.toFixed(1) + "x";
             document.getElementById('autoVal').textContent = autoCPS;
-            document.getElementById('critChanceVal').textContent = critChance;
+            document.getElementById('rebirthBtn').textContent = `Rebirth (${rebirths})`;
+            document.getElementById('comboDisplay').textContent = "Combo x" + comboBonus.toFixed(1);
 
-            // Progress Bar Logic
+            // Progress Bar
             let curIdx = 0;
             for(let i=WORLDS.length-1; i>=0; i--) {
                 if(score >= WORLDS[i].min) { curIdx = i; break; }
             }
             document.body.style.backgroundImage = WORLDS[curIdx].bg;
-            
             const next = WORLDS[curIdx + 1];
             if(next) {
-                const diffTotal = next.min - WORLDS[curIdx].min;
-                const diffCurrent = score - WORLDS[curIdx].min;
-                // Calculate percentage with 1 decimal place using BigInt precision
-                const pct = Number((diffCurrent * 1000n) / diffTotal) / 10; 
+                const pct = Number(((score - WORLDS[curIdx].min) * 1000n) / (next.min - WORLDS[curIdx].min)) / 10;
                 document.getElementById('progressBar').style.width = pct + "%";
-                document.getElementById('levelText').textContent = `${WORLDS[curIdx].name} -> ${next.name} (${pct.toFixed(1)}%)`;
+                document.getElementById('levelText').textContent = `${WORLDS[curIdx].name} (${pct.toFixed(1)}%)`;
             } else {
                 document.getElementById('progressBar').style.width = "100%";
-                document.getElementById('levelText').textContent = `MAX WORLD: ${WORLDS[curIdx].name}`;
+                document.getElementById('levelText').textContent = "ULTIMATE WORLD";
             }
         }
 
         function triggerClick(e) {
             if(e) e.preventDefault();
+            
+            // Audio Logic (Rapidity fixed)
+            if(score >= WORLDS[WORLDS.length-1].min) {
+                sndOi.currentTime = 0; sndOi.play().catch(()=>{});
+            } else {
+                sndClick.currentTime = 0; sndClick.play().catch(()=>{});
+            }
+
+            // Screen Shake
+            document.body.classList.remove('shake');
+            void document.body.offsetWidth; // Trigger reflow
+            document.body.classList.add('shake');
+
+            // Combo Logic
+            comboMeter = Math.min(100, comboMeter + 5);
+            comboBonus = 1.0 + (comboMeter / 50); // Max 3x bonus
+
+            // Calculation
             let isCrit = (Math.random() * 100) < critChance;
             let gain = BigInt(Math.floor(Math.random() * Number(clickPower))) + 1n;
             if(isCrit) gain *= 10n;
-            gain = BigInt(Math.floor(Number(gain) * globalMult));
+            gain = BigInt(Math.floor(Number(gain) * shopMult * (rebirths + 1) * comboBonus));
 
             score += gain;
             clicks.push(Date.now());
@@ -246,91 +259,54 @@
             const y = e ? e.clientY : window.innerHeight / 2;
             createP(x, y, gain.toLocaleString(), isCrit);
 
-            if(score >= WORLDS[WORLDS.length-1].min) {
-                sndOi.currentTime = 0; sndOi.play().catch(()=>{});
-            } else {
-                sndClick.currentTime = 0; sndClick.play().catch(()=>{});
-            }
             updateUI(); save();
         }
 
-        // --- SHOP ACTIONS ---
-        document.getElementById('buyClick').onclick = () => {
-            if(score >= clickCost) {
-                score -= clickCost;
-                clickPower = BigInt(Math.floor(Number(clickPower) * 2.8));
-                clickCost = BigInt(Math.floor(Number(clickCost) * 3));
-                updateUI(); save();
-            }
-        };
-        document.getElementById('buyAuto').onclick = () => {
-            if(score >= autoCost) {
-                score -= autoCost;
-                autoCPS += 1;
-                autoCost = BigInt(Math.floor(Number(autoCost) * 2.2));
-                updateUI(); save();
-            }
-        };
-        document.getElementById('buyCrit').onclick = () => {
-            if(score >= critCost && critChance < 100) {
-                score -= critCost;
-                critChance += 2;
-                critCost = BigInt(Math.floor(Number(critCost) * 4));
-                updateUI(); save();
-            }
-        };
-        document.getElementById('buyMult').onclick = () => {
-            if(score >= multCost) {
-                score -= multCost;
-                globalMult *= 1.5;
-                multCost = BigInt(Math.floor(Number(multCost) * 6));
-                updateUI(); save();
+        // --- SHOP & REBIRTH ---
+        document.getElementById('rebirthBtn').onclick = () => {
+            const rebirthGoal = BigInt(10_000_000_000);
+            if(score >= rebirthGoal) {
+                if(confirm("Rebirth? You lose all points and upgrades but get a PERMANENT 2x multiplier!")) {
+                    rebirths++;
+                    score = 0n; clickPower = 5n; clickCost = 250n; autoCPS = 0; autoCost = 500n;
+                    critChance = 10; shopMult = 1.0; save(); location.reload();
+                }
+            } else {
+                alert(`You need ${rebirthGoal.toLocaleString()} points to Rebirth!`);
             }
         };
 
+        document.getElementById('buyClick').onclick = () => { if(score >= clickCost) { score -= clickCost; clickPower = BigInt(Math.floor(Number(clickPower) * 2.8)); clickCost = BigInt(Math.floor(Number(clickCost) * 3)); updateUI(); save(); } };
+        document.getElementById('buyAuto').onclick = () => { if(score >= autoCost) { score -= autoCost; autoCPS++; autoCost = BigInt(Math.floor(Number(autoCost) * 2.2)); updateUI(); save(); } };
+        document.getElementById('buyCrit').onclick = () => { if(score >= critCost && critChance < 100) { score -= critCost; critChance += 3; critCost *= 5n; updateUI(); save(); } };
+        document.getElementById('buyMult').onclick = () => { if(score >= shopMultCost) { score -= shopMultCost; shopMult *= 1.6; shopMultCost *= 8n; updateUI(); save(); } };
+
         // --- LOOPS ---
         setInterval(() => {
+            // Combo Decay
+            comboMeter = Math.max(0, comboMeter - 2);
+            comboBonus = 1.0 + (comboMeter / 50);
+            document.getElementById('comboBar').style.width = comboMeter + "%";
+
+            // Auto Clicker
             if(autoCPS > 0) {
-                score += BigInt(Math.floor(autoCPS * globalMult));
+                score += BigInt(Math.floor(autoCPS * shopMult * (rebirths + 1)));
                 updateUI(); save();
             }
         }, 1000);
 
         setInterval(() => {
             const now = Date.now();
-            clicks = clicks.filter(t => now - t <= 60000);
-            document.getElementById('cpsVal').textContent = clicks.filter(t => now - t <= 1000).length;
-            document.getElementById('cpmVal').textContent = clicks.length;
+            clicks = clicks.filter(t => now - t <= 1000);
+            document.getElementById('cpsVal').textContent = clicks.length;
         }, 100);
 
         // --- EVENTS ---
         document.getElementById('mainButton').onmousedown = triggerClick;
-        window.onkeydown = (e) => { if (['Enter',' ','Space'].includes(e.key)) e.preventDefault(); };
         window.onkeyup = (e) => { if (['Enter',' ','Space'].includes(e.key)) triggerClick(); };
+        document.getElementById('resetBtn').onclick = () => { if(confirm("Hard Reset?")) { localStorage.clear(); location.reload(); } }
 
-        function updateDaily() {
-            const d = (24*60*60*1000) - (Date.now() - lastClaim);
-            if(d <= 0) {
-                document.getElementById('rewardTimer').textContent = "READY";
-                document.getElementById('claimBtn').disabled = false;
-            } else {
-                const h = Math.floor(d/3600000), m = Math.floor((d%3600000)/60000), s = Math.floor((d%60000)/1000);
-                document.getElementById('rewardTimer').textContent = `${h}h ${m}m ${s}s`;
-                document.getElementById('claimBtn').disabled = true;
-            }
-        }
-        document.getElementById('claimBtn').onclick = () => {
-            score += (score / 2n) + 1000n;
-            lastClaim = Date.now();
-            updateUI(); save();
-        };
-
-        document.getElementById('resetBtn').onclick = () => {
-            if(confirm("Full progress wipe?")) { localStorage.clear(); location.reload(); }
-        }
-
-        setInterval(updateDaily, 1000);
-        updateUI(); updateDaily();
+        updateUI();
     </script>
 </body>
 </html>
