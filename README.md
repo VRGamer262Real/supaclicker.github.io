@@ -4,7 +4,8 @@
 # SupaClicker
 
 
-A amazing clicker that is fire! Try it out! It honestly is a W game.
+A amazing clicker that is fire! Try it out! It honestly is a  <img width="64" height="50" alt="Chrisdesign-Effect-Letters-alphabet-gold-67" src="https://github.com/user-attachments/assets/d5c431a6-951b-448b-8ee9-0ae22fbc1b2a" />
+game.
 
 Play me and my friends hacked fork for an extra fun time! (https://github.com/VRGamer262Real/supaclicker.github.io)
 
