@@ -1,4 +1,4 @@
-![js-is-(not)-awesome](https://github.com/user-attachments/assets/453a2dbf-ef39-4ccb-afde-2230a5e93631)![i-love-debugging](https://github.com/user-attachments/assets/60c01990-4c2b-4363-90eb-9deb286d688f)
+![js-is-(not)-awesome](https://github.com/user-attachments/assets/453a2dbf-ef39-4ccb-afde-2230a5e93631) ![i-love-debugging](https://github.com/user-attachments/assets/60c01990-4c2b-4363-90eb-9deb286d688f)
 
 
 # SupaClicker
