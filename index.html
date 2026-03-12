@@ -140,6 +140,12 @@
 </div>
 
 <script>
+    /*
+    JUST TO MAKE YOU AWARE:
+
+    THE SCRIPT IS CURRENTLY FAILING TO ACTUALLY LOAD TO THE WEBSITE!
+    */
+    
     // --- UTILS ---
     function format(n) {
         let num = typeof n === 'bigint' ? Number(n) : n;
@@ -323,8 +329,9 @@
     document.getElementById('mainButton').onmousedown = doClick;
     window.onkeyup = (e) => { if([' ','Enter'].includes(e.key)) doClick(); };
     document.getElementById('resetBtn').onclick = () => { if(confirm("Full Wipe?")) { localStorage.clear(); location.reload(); }};
-    updateUI();
+    updateUI();    
 </script>
 </body>
 </html>
+
 
