@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supa Clicker v1.4.1</title>
+    <title>Supa Clicker v1.4.2</title>
     <link rel="icon" href="https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/main/ButtonIcon.png">
 
     <style>
@@ -20,25 +20,30 @@
             font-family: 'Marker Felt', fantasy; color: white;
             height: 100vh; width: 100vw;
             display: flex; justify-content: center; align-items: center;
-            transition: background-image 1s ease-in-out;
             user-select: none;
         }
 
+        /* --- THE RESCALE FIX --- */
         #gameWrapper {
-            width: 100%; height: 100%;
+            width: 100vw; height: 100vh;
             display: flex; justify-content: center; align-items: center;
+            overflow: hidden;
         }
 
         #gameContainer {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            width: 1600px; /* Virtual Width */
+            height: 900px; /* Virtual Height */
             position: relative;
-            width: 100vw; height: 100vh;
+            flex-shrink: 0;
             transform-origin: center center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* --- UI ELEMENTS --- */
         .main-button {
-            width: 350px; height: 350px; font-size: 2.5rem; 
+            width: 400px; height: 400px; font-size: 2.8rem; 
             border: 12px solid white; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             cursor: pointer; position: relative; text-align: center;
@@ -64,40 +69,40 @@
         }
 
         #topUI {
-            position: absolute; top: 0; width: 100%; height: 90px;
-            background: var(--ui-bg); border-bottom: 3px solid white;
+            position: absolute; top: 20px; width: 95%; height: 90px;
+            background: var(--ui-bg); border: 3px solid white; border-radius: 20px;
             display: flex; justify-content: space-around; align-items: center; z-index: 100;
         }
 
         #progessContainer { 
-            width: 35%; height: 25px; background: #222; border: 2px solid white; 
-            border-radius: 12px; position: relative; overflow: hidden; 
+            width: 35%; height: 30px; background: #222; border: 2px solid white; 
+            border-radius: 15px; position: relative; overflow: hidden; 
         }
         #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, #00f2ff, #7000ff); transition: width 0.3s; }
-        #levelText { position: absolute; width:100%; text-align:center; font-size: 1rem; top: 2px; text-shadow: 1px 1px black; font-weight: bold; }
+        #levelText { position: absolute; width:100%; text-align:center; font-size: 1.2rem; top: 4px; text-shadow: 1px 1px black; font-weight: bold; }
 
         #statsPanel { 
-            position: absolute; left: 20px; bottom: 20px; background: var(--ui-bg); 
-            padding: 20px; border: 2px solid white; border-radius: 15px; min-width: 240px; 
+            position: absolute; left: 40px; top: 150px; background: var(--ui-bg); 
+            padding: 25px; border: 3px solid white; border-radius: 20px; min-width: 280px; 
         }
 
         #shopPanel { 
-            position: absolute; right: 20px; top: 110px; bottom: 20px; width: 330px; 
-            background: var(--ui-bg); padding: 15px; border: 2px solid white; border-radius: 15px; 
-            overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+            position: absolute; right: 40px; top: 150px; bottom: 40px; width: 360px; 
+            background: var(--ui-bg); padding: 20px; border: 3px solid white; border-radius: 20px; 
+            overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
         }
 
         .shop-item { 
-            background: rgba(255,255,255,0.06); padding: 12px; border-radius: 12px; 
+            background: rgba(255,255,255,0.06); padding: 15px; border-radius: 15px; 
             border: 1px solid #555; cursor: pointer; transition: 0.2s;
         }
         .shop-item:hover { background: rgba(255,255,255,0.15); transform: translateX(-5px); }
-        .shop-item b { color: #00f2ff; display: block; font-size: 1.1rem; }
-        .shop-item small { color: #ccc; display: block; margin-top: 2px; font-size: 0.85rem; }
-        .shop-item .cost { color: #ffeb3b; font-weight: bold; display: block; margin-top: 5px; }
+        .shop-item b { color: #00f2ff; display: block; font-size: 1.2rem; }
+        .shop-item small { color: #ccc; display: block; margin-top: 4px; font-size: 0.9rem; }
+        .shop-item .cost { color: #ffeb3b; font-weight: bold; display: block; margin-top: 8px; }
 
         .particle {
-            position: fixed; pointer-events: none; font-weight: bold; font-size: 2.2rem;
+            position: fixed; pointer-events: none; font-weight: bold; font-size: 2.5rem;
             animation: particleMove 0.8s forwards; text-shadow: 2px 2px 5px black; z-index: 1000;
         }
         @keyframes particleMove { 0% {opacity:1; transform:translateY(0);} 100% {opacity:0; transform:translateY(-180px) scale(1.5);} }
@@ -105,33 +110,36 @@
         /* --- COOKIE POPUP --- */
         #cookieOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); display: flex; justify-content: center;
-            align-items: center; z-index: 2000;
+            background: rgba(0,0,0,0.9); display: flex; justify-content: center;
+            align-items: center; z-index: 5000;
         }
         .cookie-box {
-            background: #111; border: 4px solid white; padding: 30px; border-radius: 20px;
-            text-align: center; max-width: 400px;
+            background: #111; border: 5px solid white; padding: 40px; border-radius: 30px;
+            text-align: center; max-width: 500px; box-shadow: 0 0 50px rgba(255,255,255,0.2);
         }
         .cookie-btn {
-            background: #444; color: white; border: 2px solid white; padding: 10px 20px;
-            margin: 10px; cursor: pointer; font-family: inherit; font-size: 1.1rem; border-radius: 8px;
+            background: #333; color: white; border: 3px solid white; padding: 15px 30px;
+            margin: 15px; cursor: pointer; font-family: inherit; font-size: 1.3rem; border-radius: 12px;
+            transition: 0.2s;
         }
-        .cookie-btn:hover { background: #666; }
+        .cookie-btn:hover { background: #d32f2f; }
 
-        #comboContainer { width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        #comboContainer { width: 100%; height: 12px; background: #333; border-radius: 6px; margin-top: 8px; overflow: hidden; }
         #comboBar { width: 0%; height: 100%; background: #00e5ff; }
-        #rebirthBtn { background: #6200ea; color: white; padding: 10px 20px; border: 2px solid white; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        #resetBtn { background: #d32f2f; color: white; border: none; border-radius: 5px; cursor: pointer; padding: 5px 10px; }
+        #rebirthBtn { background: #6200ea; color: white; padding: 12px 25px; border: 2px solid white; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+        #resetBtn { background: #d32f2f; color: white; border: none; border-radius: 8px; cursor: pointer; padding: 8px 15px; }
     </style>
 </head>
 <body>
 
 <div id="cookieOverlay">
     <div class="cookie-box">
-        <h2>Cookies?</h2>
-        <p>Would you like to accept cookies?</p>
-        <button class="cookie-btn" onclick="closeCookies()">Block Cookies</button>
-        <button class="cookie-btn" onclick="closeCookies()">Block Cookies</button>
+        <h1 style="color: #ffeb3b; margin-top: 0;">Cookie Notice</h1>
+        <p style="font-size: 1.4rem;">Would you like to accept cookies to save your progress locally?</p>
+        <div style="margin-top: 30px;">
+            <button class="cookie-btn" onclick="closeCookies()">Block Cookies</button>
+            <button class="cookie-btn" onclick="closeCookies()">Block Cookies</button>
+        </div>
     </div>
 </div>
 
@@ -140,23 +148,23 @@
         <div id="topUI">
             <div id="progessContainer">
                 <div id="progressBar"></div>
-                <div id="levelText">Initializing...</div>
+                <div id="levelText">Connecting...</div>
             </div>
             <button id="rebirthBtn">Rebirth (0)</button>
-            <button id="resetBtn">Reset</button>
+            <button id="resetBtn">Full Reset</button>
         </div>
 
         <div id="statsPanel">
-            <div id="scoreLabel" style="font-size: 2rem; color: #ffeb3b; margin-bottom: 10px;">0</div>
+            <div id="scoreLabel" style="font-size: 2.2rem; color: #ffeb3b; margin-bottom: 15px;">0</div>
             <div><b>Manual Power:</b> <span id="pwrVal">5</span></div>
-            <div style="margin-top:5px;"><b>Combo:</b> <span id="comboVal">x1.0</span></div>
+            <div style="margin-top:8px;"><b>Combo:</b> <span id="comboVal">x1.0</span></div>
             <div id="comboContainer"><div id="comboBar"></div></div>
-            <div style="margin-top:10px;"><b>Shop Multi:</b> <span id="multVal">1.0x</span></div>
+            <div style="margin-top:15px;"><b>Global Multi:</b> <span id="multVal">1.0x</span></div>
             <div><b>Crit:</b> <span id="critCVal">10</span>% (<span id="critDVal">10</span>x)</div>
         </div>
 
         <div id="shopPanel">
-            <h2 style="text-align: center; margin: 0; color: var(--neon-blue);">Ω SHOP</h2>
+            <h2 style="text-align: center; margin: 0; color: var(--neon-blue); font-size: 1.8rem;">Ω STORE</h2>
             <div class="shop-item" onclick="buy('pwr')"><b>Super Surge</b><small>+2.8x Manual Strength</small><span id="costPwr" class="cost">Cost: 250</span></div>
             <div class="shop-item" onclick="buy('auto')"><b>Happy Helper</b><small>Automated clicks per sec</small><span id="costAuto" class="cost">Cost: 500</span></div>
             <div class="shop-item" onclick="buy('eff')"><b>Huge Helper Crystalline Core</b><small>Helpers gain efficiency</small><span id="costEff" class="cost">Cost: 5k</span></div>
@@ -175,55 +183,55 @@
 <script>
     function closeCookies() { document.getElementById('cookieOverlay').style.display = 'none'; }
 
-    // --- RESPONSIVE SCALING ---
+    // --- ENHANCED RESCALE LOGIC ---
     function handleResize() {
         const container = document.getElementById('gameContainer');
-        const targetWidth = 1400; // Expected design width
-        const targetHeight = 850; // Expected design height
-        const scaleX = window.innerWidth / targetWidth;
-        const scaleY = window.innerHeight / targetHeight;
-        const scale = Math.min(scaleX, scaleY, 1); // Never scale up past 1x
+        const vWidth = 1600;
+        const vHeight = 900;
+        const scaleX = window.innerWidth / vWidth;
+        const scaleY = window.innerHeight / vHeight;
+        const scale = Math.min(scaleX, scaleY); // Scale down to fit smallest dimension
         container.style.transform = `scale(${scale})`;
     }
     window.addEventListener('resize', handleResize);
     handleResize();
 
-    // --- FORMATTING ---
+    // --- NUMBERS ---
     function format(n) {
         let num = typeof n === 'bigint' ? Number(n) : n;
         if (num < 1e6) return Math.floor(num).toLocaleString();
         return num.toExponential(2).replace('e+', 'e+');
     }
 
-    // --- GAME STATE ---
+    // --- GAME DATA ---
     const DEFAULTS = {
         score: "0", pwr: "5", costPwr: "250", helpers: 0, costAuto: "500",
         eff: 0.5, costEff: "5000", critC: 10, costCritC: "2500",
         critD: 10, costCritD: "25000", multi: 1.0, costMulti: "10000",
-        rate: 30000, costRate: "100000", decay: 2.5, costDecay: "250000",
-        costWarp: "1000000", warp: 1.0, costVoid: "500000000", voidM: 1.0
+        decay: 2.5, costDecay: "250000", costWarp: "1000000", warp: 1.0, 
+        costVoid: "500000000", voidM: 1.0
     };
 
-    let score = BigInt(localStorage.getItem('v8_score') || DEFAULTS.score);
-    let clickPwr = BigInt(localStorage.getItem('v8_pwr') || DEFAULTS.pwr);
-    let costPwr = BigInt(localStorage.getItem('v8_costPwr') || DEFAULTS.costPwr);
-    let helpers = parseInt(localStorage.getItem('v8_helpers') || DEFAULTS.helpers);
-    let costAuto = BigInt(localStorage.getItem('v8_costAuto') || DEFAULTS.costAuto);
-    let helperEff = parseFloat(localStorage.getItem('v8_eff') || DEFAULTS.eff);
-    let costEff = BigInt(localStorage.getItem('v8_costEff') || DEFAULTS.costEff);
-    let critC = parseInt(localStorage.getItem('v8_critC') || DEFAULTS.critC);
-    let costCritC = BigInt(localStorage.getItem('v8_costCritC') || DEFAULTS.costCritC);
-    let critD = parseInt(localStorage.getItem('v8_critD') || DEFAULTS.critD);
-    let costCritD = BigInt(localStorage.getItem('v8_costCritD') || DEFAULTS.costCritD);
-    let globalMult = parseFloat(localStorage.getItem('v8_multi') || DEFAULTS.multi);
-    let costMulti = BigInt(localStorage.getItem('v8_costMulti') || DEFAULTS.costMulti);
-    let rebirths = parseInt(localStorage.getItem('v8_rebirths') || "0");
-    let comboDecay = parseFloat(localStorage.getItem('v8_decay') || DEFAULTS.decay);
-    let costDecay = BigInt(localStorage.getItem('v8_costDecay') || DEFAULTS.costDecay);
-    let costWarp = BigInt(localStorage.getItem('v8_costWarp') || DEFAULTS.costWarp);
-    let warpFactor = parseFloat(localStorage.getItem('v8_warp') || DEFAULTS.warp);
-    let costVoid = BigInt(localStorage.getItem('v8_costVoid') || DEFAULTS.costVoid);
-    let voidMulti = parseFloat(localStorage.getItem('v8_voidM') || DEFAULTS.voidM);
+    let score = BigInt(localStorage.getItem('v9_score') || DEFAULTS.score);
+    let clickPwr = BigInt(localStorage.getItem('v9_pwr') || DEFAULTS.pwr);
+    let costPwr = BigInt(localStorage.getItem('v9_costPwr') || DEFAULTS.costPwr);
+    let helpers = parseInt(localStorage.getItem('v9_helpers') || DEFAULTS.helpers);
+    let costAuto = BigInt(localStorage.getItem('v9_costAuto') || DEFAULTS.costAuto);
+    let helperEff = parseFloat(localStorage.getItem('v9_eff') || DEFAULTS.eff);
+    let costEff = BigInt(localStorage.getItem('v9_costEff') || DEFAULTS.costEff);
+    let critC = parseInt(localStorage.getItem('v9_critC') || DEFAULTS.critC);
+    let costCritC = BigInt(localStorage.getItem('v9_costCritC') || DEFAULTS.costCritC);
+    let critD = parseInt(localStorage.getItem('v9_critD') || DEFAULTS.critD);
+    let costCritD = BigInt(localStorage.getItem('v9_costCritD') || DEFAULTS.costCritD);
+    let globalMult = parseFloat(localStorage.getItem('v9_multi') || DEFAULTS.multi);
+    let costMulti = BigInt(localStorage.getItem('v9_costMulti') || DEFAULTS.costMulti);
+    let rebirths = parseInt(localStorage.getItem('v9_rebirths') || "0");
+    let comboDecay = parseFloat(localStorage.getItem('v9_decay') || DEFAULTS.decay);
+    let costDecay = BigInt(localStorage.getItem('v9_costDecay') || DEFAULTS.costDecay);
+    let costWarp = BigInt(localStorage.getItem('v9_costWarp') || DEFAULTS.costWarp);
+    let warpFactor = parseFloat(localStorage.getItem('v9_warp') || DEFAULTS.warp);
+    let costVoid = BigInt(localStorage.getItem('v9_costVoid') || DEFAULTS.costVoid);
+    let voidMulti = parseFloat(localStorage.getItem('v9_voidM') || DEFAULTS.voidM);
 
     let combo = 0, comboMult = 1.0;
     const sndClick = new Audio("https://raw.githubusercontent.com/zOcMYT/supaclicker.github.io/main/Mouseclick.wav");
@@ -240,16 +248,16 @@
     ];
 
     function save() {
-        localStorage.setItem('v8_score', score.toString()); localStorage.setItem('v8_pwr', clickPwr.toString());
-        localStorage.setItem('v8_costPwr', costPwr.toString()); localStorage.setItem('v8_helpers', helpers.toString());
-        localStorage.setItem('v8_costAuto', costAuto.toString()); localStorage.setItem('v8_eff', helperEff.toString());
-        localStorage.setItem('v8_costEff', costEff.toString()); localStorage.setItem('v8_critC', critC.toString());
-        localStorage.setItem('v8_costCritC', costCritC.toString()); localStorage.setItem('v8_critD', critD.toString());
-        localStorage.setItem('v8_costCritD', costCritD.toString()); localStorage.setItem('v8_multi', globalMult.toString());
-        localStorage.setItem('v8_costMulti', costMulti.toString()); localStorage.setItem('v8_rebirths', rebirths.toString());
-        localStorage.setItem('v8_decay', comboDecay.toString()); localStorage.setItem('v8_costDecay', costDecay.toString());
-        localStorage.setItem('v8_costWarp', costWarp.toString()); localStorage.setItem('v8_warp', warpFactor.toString());
-        localStorage.setItem('v8_costVoid', costVoid.toString()); localStorage.setItem('v8_voidM', voidMulti.toString());
+        localStorage.setItem('v9_score', score.toString()); localStorage.setItem('v9_pwr', clickPwr.toString());
+        localStorage.setItem('v9_costPwr', costPwr.toString()); localStorage.setItem('v9_helpers', helpers.toString());
+        localStorage.setItem('v9_costAuto', costAuto.toString()); localStorage.setItem('v9_eff', helperEff.toString());
+        localStorage.setItem('v9_costEff', costEff.toString()); localStorage.setItem('v9_critC', critC.toString());
+        localStorage.setItem('v9_costCritC', costCritC.toString()); localStorage.setItem('v9_critD', critD.toString());
+        localStorage.setItem('v9_costCritD', costCritD.toString()); localStorage.setItem('v9_multi', globalMult.toString());
+        localStorage.setItem('v9_costMulti', costMulti.toString()); localStorage.setItem('v9_rebirths', rebirths.toString());
+        localStorage.setItem('v9_decay', comboDecay.toString()); localStorage.setItem('v9_costDecay', costDecay.toString());
+        localStorage.setItem('v9_costWarp', costWarp.toString()); localStorage.setItem('v9_warp', warpFactor.toString());
+        localStorage.setItem('v9_costVoid', costVoid.toString()); localStorage.setItem('v9_voidM', voidMulti.toString());
     }
 
     function updateUI() {
@@ -329,8 +337,9 @@
     document.getElementById('rebirthBtn').onclick = () => {
         const target = 100_000_000_000n;
         if(score >= target) {
-            if(confirm("REBIRTH? This resets all shop prices but keeps your Rebirth Multiplier!")) {
+            if(confirm("REBIRTH? Prices will reset but you'll gain a massive permanent boost!")) {
                 rebirths++;
+                // RESET TO DEFAULTS
                 score = BigInt(DEFAULTS.score); clickPwr = BigInt(DEFAULTS.pwr); costPwr = BigInt(DEFAULTS.costPwr);
                 helpers = DEFAULTS.helpers; costAuto = BigInt(DEFAULTS.costAuto); helperEff = DEFAULTS.eff;
                 costEff = BigInt(DEFAULTS.costEff); critC = DEFAULTS.critC; costCritC = BigInt(DEFAULTS.costCritC);
@@ -340,7 +349,7 @@
                 voidMulti = DEFAULTS.voidM;
                 save(); location.reload();
             }
-        } else alert(`Need ${format(target)} points to Rebirth!`);
+        } else alert(`Need ${format(target)} for Rebirth!`);
     }
 
     setInterval(() => {
@@ -356,8 +365,8 @@
 
     document.getElementById('mainButton').onmousedown = doClick;
     window.onkeyup = (e) => { if([' ','Enter'].includes(e.key)) doClick(); };
-    document.getElementById('resetBtn').onclick = () => { if(confirm("Full Wipe?")) { localStorage.clear(); location.reload(); }};
-    updateUI();    
+    document.getElementById('resetBtn').onclick = () => { if(confirm("DELETE EVERYTHING?")) { localStorage.clear(); location.reload(); }};
+    updateUI();
 </script>
 </body>
 </html>
